@@ -105,7 +105,7 @@ void delay_us(uint32_t nus)
 	uint32_t t;
 	while(nus--)
 	{
-		t=12;
+		t=2;
 		while(t--){}
 		
 	}
@@ -134,6 +134,18 @@ void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
 	
 }
 
+/**
+  * @brief  Conversion complete callback in non-blocking mode.
+  * @param  hadc ADC handle
+  * @retval None
+  */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+	SampleData.vin = 0;
+}
+
+
+
 //系统进入待机模式
 void Sys_Enter_Standby(void)
 {			 
@@ -160,6 +172,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
 	uint32_t time_ls=0;
+	uint32_t time_50ms=0;
   /* USER CODE END 1 */
   
 
@@ -181,9 +194,7 @@ int main(void)
 	MX_I2C1_Init();
 	
 	MX_USART1_UART_Init();
-
-	MX_ADC_Init();
-  
+	
   
 	NRF24L01_Base_Init();//-- 包含SPI初始化
 	while (NRF24L01_Check())
@@ -195,41 +206,61 @@ int main(void)
     RF24L01_Set_Mode(MODE_RX);//设置为接收模式
 	system.state = SYSTEM_STATE_STANDBY;
 	
-	if(__HAL_PWR_GET_FLAG(PWR_FLAG_WU))
-	{
-		uint16_t t=100;
-		LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
-		while(1)
-		{
-			delay_us(100);
-			if(0 == --t)
-			{
-				LL_GPIO_ResetOutputPin(LED_GPIO_Port, LED_Pin);
-				if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 3500, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
-				  {
-					Error_Handler();
-				  }
-				Sys_Enter_Standby();
-			}
-			if(SYSTEM_STATE_IDLE == system.state)
-			{
-				__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
-				HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
-				break;
-			}
-		}
-	}
+//	if(__HAL_PWR_GET_FLAG(PWR_FLAG_WU))
+//	{
+//		uint16_t t=100;
+//		LL_GPIO_SetOutputPin(LED_GPIO_Port, LED_Pin);
+//		while(1)
+//		{
+//			delay_us(100);
+//			if(0 == --t)
+//			{
+//				LL_GPIO_ResetOutputPin(LED_GPIO_Port, LED_Pin);
+//				if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 3500, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
+//				  {
+//					Error_Handler();
+//				  }
+//				Sys_Enter_Standby();
+//			}
+//			if(SYSTEM_STATE_IDLE == system.state)
+//			{
+//				__HAL_PWR_CLEAR_FLAG(PWR_FLAG_WU);
+//				HAL_RTCEx_DeactivateWakeUpTimer(&hrtc);
+//				break;
+//			}
+//		}
+//	}
+	system.state = SYSTEM_STATE_IDLE;
 	
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
 
-  
   /* USER CODE BEGIN 2 */
-	MX_RTC_Init();
+  
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	if (HAL_RTC_Init(&hrtc) != HAL_OK)
+	{
+		Error_Handler();
+	}
+  
+	if(0x32F2 != HAL_RTCEx_BKUPRead(&hrtc, RTC_BKP_DR0))
+	{
+		MX_RTC_Init();
+		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
+	}
 	
 	control_Init();
 	bldc_comm_uart_init();
+	MX_ADC_Init();
+	
   /* USER CODE END 2 */
  
  
@@ -242,13 +273,20 @@ int main(void)
 
 		if(HAL_GetTick()>time_ls)
 		{
-			time_ls = HAL_GetTick()+600;
+			time_ls = HAL_GetTick()+1000;
+			RTC_Get();
 
 			if(system.state==SYSTEM_STATE_RUNNING)
 			{
 				bldc_interface_get_values();
 			}
 			LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		}
+		
+		if(HAL_GetTick() > time_50ms)
+		{
+			time_50ms = HAL_GetTick()+50;
+			HAL_ADC_Start_DMA(&hadc, (uint32_t*)SampleData.ADC_Value_Array, ADC_ARRAY_SIZE);
 		}
 		
 
@@ -314,19 +352,22 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+char error_message[32];
+
 /* USER CODE END 4 */
 
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
   */
-void Error_Handler(void)
+void __Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
 	while(1)
 	{
-		
+		HAL_Delay(50);
+		LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	}
   /* USER CODE END Error_Handler_Debug */
 }

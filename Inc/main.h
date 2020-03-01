@@ -80,11 +80,13 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#include <stdio.h>
+extern char error_message[];
+#define Error_Handler() {snprintf(error_message, 32, "err:%s,%d\r\n", __FILE__, __LINE__);__Error_Handler();}
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
-void Error_Handler(void);
+void __Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 
@@ -155,6 +157,8 @@ extern void(*usart2_callback)(void);
 void delay_us(uint32_t nus);
 
 
+
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
@@ -164,6 +168,12 @@ void delay_us(uint32_t nus);
 #define NRF_CS_GPIO_Port GPIOA
 #define NRF_CE_Pin LL_GPIO_PIN_6
 #define NRF_CE_GPIO_Port GPIOA
+#define MPU_INT_Pin LL_GPIO_PIN_2
+#define MPU_INT_GPIO_Port GPIOB
+#define MPU_INT_EXTI_IRQn EXTI2_3_IRQn
+#define NRF_IRQ_Pin LL_GPIO_PIN_3
+#define NRF_IRQ_GPIO_Port GPIOB
+#define NRF_IRQ_EXTI_IRQn EXTI2_3_IRQn
 #define IO_VIN_EN_Pin LL_GPIO_PIN_5
 #define IO_VIN_EN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */

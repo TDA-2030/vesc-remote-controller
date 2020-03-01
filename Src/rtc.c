@@ -66,10 +66,10 @@ void MX_RTC_Init(void)
   {
     Error_Handler();
   }
-  sDate.WeekDay = RTC_WEEKDAY_MONDAY;
-  sDate.Month = RTC_MONTH_JANUARY;
+  sDate.WeekDay = RTC_WEEKDAY_SUNDAY;
+  sDate.Month = RTC_MONTH_MARCH;
   sDate.Date = 1;
-  sDate.Year = 0;
+  sDate.Year = 20;
 
   if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK)
   {
@@ -77,10 +77,6 @@ void MX_RTC_Init(void)
   }
   /** Enable the WakeUp 
   */
-//  if (HAL_RTCEx_SetWakeUpTimer_IT(&hrtc, 3500, RTC_WAKEUPCLOCK_RTCCLK_DIV16) != HAL_OK)
-//  {
-//    Error_Handler();
-//  }
 
 }
 
@@ -130,8 +126,9 @@ void RTC_Get(void)
 	RTC_DateTypeDef rtc_data;
 	RTC_TimeTypeDef rtc_time;
 	
-	HAL_RTC_GetDate(&hrtc, &rtc_data, RTC_FORMAT_BIN);
 	HAL_RTC_GetTime(&hrtc, &rtc_time, RTC_FORMAT_BIN);
+	HAL_RTC_GetDate(&hrtc, &rtc_data, RTC_FORMAT_BIN);
+	
 	
 	calendar.w_year = rtc_data.Year;
 	calendar.w_month = rtc_data.Month;
@@ -158,8 +155,8 @@ uint8_t RTC_Set(uint16_t syear,uint8_t smon,uint8_t sday,uint8_t hour,uint8_t mi
 	rtc_time.Minutes = min;
 	rtc_time.Seconds = sec;
 	
-	HAL_RTC_SetDate(&hrtc, &rtc_data, RTC_FORMAT_BIN);
 	HAL_RTC_SetTime(&hrtc, &rtc_time, RTC_FORMAT_BIN);
+	HAL_RTC_SetDate(&hrtc, &rtc_data, RTC_FORMAT_BIN);
 	return 0;
 }
 

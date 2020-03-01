@@ -52,6 +52,7 @@ void usart2_isr(void)
 	{
 		bldc_rxchar(LL_USART_ReceiveData8(USART2));
 	}
+	LL_USART_ClearFlag_ORE(USART2);
 }
 
 

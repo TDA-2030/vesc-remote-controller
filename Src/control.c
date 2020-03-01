@@ -115,45 +115,38 @@ uint8_t Upload_data(void);
 
 void nrf_int_handler(void)
 {
-	
 	uint8_t status;
 	uint8_t RxLength;
 	
-	
-	//if((RF24L01_GET_IRQ_STATUS( )==0))
+	status=NRF24L01_Read_Reg(STATUS);  //读取状态寄存器的值
+	NRF24L01_Write_Reg(NRF_WRITE_REG+STATUS,status); //清除TX_DS或MAX_RT中断标志
+	if(status&MAX_TX)
 	{
-		status=NRF24L01_Read_Reg(STATUS);  //读取状态寄存器的值
-		NRF24L01_Write_Reg(NRF_WRITE_REG+STATUS,status); //清除TX_DS或MAX_RT中断标志
-		if(status&MAX_TX)
+		NRF24L01_Write_Reg( FLUSH_TX,0xff );	//清除TX FIFO寄存器
+	}
+	else if(status&RX_OK)
+	{
+		RxLength = NRF24L01_Read_Reg( R_RX_PL_WID );		//读取接收到的数据个数
+		if(RxLength<=32)
 		{
-			NRF24L01_Write_Reg( FLUSH_TX,0xff );	//清除TX FIFO寄存器
-		}
-		else if(status&RX_OK)
-		{
-			RxLength = NRF24L01_Read_Reg( R_RX_PL_WID );		//读取接收到的数据个数
-			if(RxLength<=32)
+			NRF24L01_Read_Buf( RD_RX_PLOAD,nrf_rx_buf,RxLength );	//接收到数据
+			NRF24L01_Write_Reg( FLUSH_RX,0xff );				//清除RX FIFO
+			if(Exue_Control()==0)
 			{
-				NRF24L01_Read_Buf( RD_RX_PLOAD,nrf_rx_buf,RxLength );	//接收到数据
-				NRF24L01_Write_Reg( FLUSH_RX,0xff );				//清除RX FIFO
-				if(Exue_Control()==0)
-				{
-					notfound_time=0; //接收到数据，清空计数器
-					RF24L01_Set_Mode(MODE_TX);
-					NRF_Mode=MODE_TX;
-				}
+				notfound_time=0; //接收到数据，清空计数器
+				RF24L01_Set_Mode(MODE_TX);
+				NRF_Mode=MODE_TX;
 			}
 		}
-		else if(status&TX_OK)
-		{
-			NRF24L01_Write_Reg( FLUSH_TX,0xff );	//清除TX FIFO寄存器
-			notfound_time=0; //发送成功数据，清空计数器
-			
-			NRF_Mode=MODE_RX;
-			RF24L01_Set_Mode(MODE_RX);
-		}
-		
 	}
-	
+	else if(status&TX_OK)
+	{
+		NRF24L01_Write_Reg( FLUSH_TX,0xff );	//清除TX FIFO寄存器
+		notfound_time=0; //发送成功数据，清空计数器
+		
+		NRF_Mode=MODE_RX;
+		RF24L01_Set_Mode(MODE_RX);
+	}
 }
 
 /**
@@ -258,13 +251,17 @@ uint32_t ParseToData(uint8_t **pt,uint8_t d_type)
 //初始化IO口
 void control_Init(void)
 {
-	exit2_callback = nrf_int_handler;
+	exit3_callback = nrf_int_handler;
 	
 	throttle_init();
 	light_init();
 	bootstrap_init();
-	MX_TIM6_Init();
 	
+	MX_TIM6_Init();
+	HAL_TIM_Base_Start_IT(&htim6);
+	NRF24L01_Write_Reg(NRF_WRITE_REG+STATUS,NRF24L01_Read_Reg(STATUS)); //清除TX_DS或MAX_RT中断标志
+	NRF24L01_Write_Reg( FLUSH_RX,0xff );				//清除RX FIFO
+	NRF24L01_Write_Reg( FLUSH_TX,0xff );				//清除TX FIFO
 	
 }
 
@@ -287,7 +284,7 @@ uint8_t Upload_data(void) //更新要上传的数据
 			AddToArray(&ptr,nrf_data_tacho_single ,SampleData.tacho_single);
 			AddToArray(&ptr,nrf_data_ah_drawn     ,SampleData.ah_drawn);
 			AddToArray(&ptr,nrf_data_ah_regen     ,SampleData.ah_regen);
-			AddToArray(&ptr,nrf_data_year         ,calendar.w_year-2000);
+			AddToArray(&ptr,nrf_data_year         ,calendar.w_year);
 			AddToArray(&ptr,nrf_data_month        ,calendar.w_month);
 			AddToArray(&ptr,nrf_data_day          ,calendar.w_date);
 			AddToArray(&ptr,nrf_data_hour         ,calendar.hour);
@@ -397,7 +394,7 @@ uint8_t Exue_Control(void)
 			d[4] = ParseToData(&ptr,nrf_data_min);
 			d[5] = ParseToData(&ptr,nrf_data_sec);
 			
-			RTC_Set(2000+d[0],d[1],d[2],d[3],d[4],d[5]);  //设置时间
+			RTC_Set(d[0],d[1],d[2],d[3],d[4],d[5]);  //设置时间
 		}break;
 		default:break;
 	}
