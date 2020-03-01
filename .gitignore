@@ -1,0 +1,17 @@
+*.mxproject
+*.ioc
+*.dbgconf
+*.crf
+*.d
+*.o
+*.iex
+*.axf
+*.htm
+*.lnp
+*.map
+*.sct
+*.dep
+*.scvd
+*.zhouli
+*.uvoptx
+
