@@ -105,7 +105,7 @@ void MX_USART2_UART_Init(void)
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USART2 interrupt Init */
-  NVIC_SetPriority(USART2_IRQn, 1);
+  NVIC_SetPriority(USART2_IRQn, 0);
   NVIC_EnableIRQ(USART2_IRQn);
 
   USART_InitStruct.BaudRate = 115200;

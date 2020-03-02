@@ -173,6 +173,7 @@ int main(void)
 
 	uint32_t time_ls=0;
 	uint32_t time_50ms=0;
+	uint32_t time_bldc=0;
   /* USER CODE END 1 */
   
 
@@ -275,11 +276,6 @@ int main(void)
 		{
 			time_ls = HAL_GetTick()+1000;
 			RTC_Get();
-
-			if(system.state==SYSTEM_STATE_RUNNING)
-			{
-				bldc_interface_get_values();
-			}
 			LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 		}
 		
@@ -287,6 +283,15 @@ int main(void)
 		{
 			time_50ms = HAL_GetTick()+50;
 			HAL_ADC_Start_DMA(&hadc, (uint32_t*)SampleData.ADC_Value_Array, ADC_ARRAY_SIZE);
+		}
+		
+		if(HAL_GetTick() > time_bldc)
+		{
+			time_bldc = HAL_GetTick()+600;
+			if(system.state==SYSTEM_STATE_RUNNING)
+			{
+				bldc_interface_get_values();
+			}
 		}
 		
 

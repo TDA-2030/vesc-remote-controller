@@ -369,11 +369,11 @@ uint8_t Exue_Control(void)
 				if(throttle<32768)
 				{
 					
-					throttle_set((uint16_t)((float)throttle*0.976f)); //反向
+					throttle_set((uint16_t)(throttle)); //反向
 				}else
 				{
 					throttle-=32768;
-					throttle_set((uint16_t)((float)throttle*0.976f));//正向
+					throttle_set((uint16_t)(throttle));//正向
 				}
 			}
 			else
