@@ -25,6 +25,7 @@
 #include "usart.h"
 
 #include "comm_uart.h"
+#include "packet.h"
 #include "bldc_interface.h"
 #include "bldc_interface_uart.h"
 
@@ -32,7 +33,7 @@
 
 // Settings
 
-#define SERIAL_RX_BUFFER_SIZE	1024
+#define SERIAL_RX_BUFFER_SIZE	768
 
 // Private functions
 static void send_packet(unsigned char *data, unsigned int len);
@@ -82,14 +83,16 @@ void bldc_rxchar(uint8_t c) {
 
 
 
+void bldc_packet_timer(void)
+{
+	packet_timerfunc();
+}
+
 
 void bldc_packet_process(void) {
 	
 	if(rxchar_flag) {
 		rxchar_flag = 0;
-				/*
-		 * Wait for data to become available and process it as long as there is data.
-		 */
 		
 		while (serial_rx_read_pos != serial_rx_write_pos) {
 			bldc_interface_uart_process_byte(serial_rx_buffer[serial_rx_read_pos++]);
@@ -110,9 +113,6 @@ void bldc_packet_process(void) {
  * Data array length
  */
 static void send_packet(unsigned char *data, unsigned int len) {
-	if (len > (PACKET_MAX_PL_LEN + 5)) {
-		return;
-	}
 	
 
 //	// Send the data over UART
@@ -127,7 +127,7 @@ static void send_packet(unsigned char *data, unsigned int len) {
 
 
 
-void bldc_val_received(mc_values *val) {
+static void bldc_val_received(mc_values *val) {
 	
 	SampleData.bat_current = val->input_current*10;
 	SampleData.mot_current = val->motor_current*10;

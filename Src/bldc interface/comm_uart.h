@@ -12,5 +12,6 @@
 void bldc_comm_uart_init(void);
 void bldc_rxchar(uint8_t c);
 void bldc_packet_process(void);
+void bldc_packet_timer(void);
 	
 #endif /* COMM_UART_H_ */

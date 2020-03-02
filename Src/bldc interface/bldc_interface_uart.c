@@ -23,15 +23,13 @@
  */
 
 #include "bldc_interface_uart.h"
-//#include "ch.h"
-//#include "hal.h"
 #include "bldc_interface.h"
+// Includes
+#include "packet.h" // For the MAX_PACKET_LEN define
 
 // Settings
-#define PACKET_HANDLER			0
+#define PACKET_HANDLER_INDEX			0
 
-// Private functions
-static void process_packet(unsigned char *data, unsigned int len);
 static void send_packet_bldc_interface(unsigned char *data, unsigned int len);
 
 /**
@@ -43,7 +41,7 @@ static void send_packet_bldc_interface(unsigned char *data, unsigned int len);
  */
 void bldc_interface_uart_init(void(*func)(unsigned char *data, unsigned int len)) {
 	// Initialize packet handler
-	packet_init(func, process_packet, PACKET_HANDLER);
+	packet_init(func, bldc_interface_process_packet, PACKET_HANDLER_INDEX);
 
 	// Initialize the bldc interface and provide a send function
 	bldc_interface_init(send_packet_bldc_interface);
@@ -57,7 +55,7 @@ void bldc_interface_uart_init(void(*func)(unsigned char *data, unsigned int len)
  * The byte received on the UART to process.
  */
 void bldc_interface_uart_process_byte(unsigned char b) {
-	packet_process_byte(b, PACKET_HANDLER);
+	packet_process_byte(b, PACKET_HANDLER_INDEX);
 }
 
 /**
@@ -68,19 +66,7 @@ void bldc_interface_uart_run_timer(void) {
 	packet_timerfunc();
 }
 
-/**
- * Callback for the packet handled for when a whole packet is received,
- * assembled and checked.
- *
- * @param data
- * Data array pointer
- * @param len
- * Data array length
- */
-static void process_packet(unsigned char *data, unsigned int len) {
-	// Let bldc_interface process the packet.
-	bldc_interface_process_packet(data, len);
-}
+
 
 /**
  * Callback that bldc_interface uses to send packets.
@@ -92,7 +78,7 @@ static void process_packet(unsigned char *data, unsigned int len) {
  */
 static void send_packet_bldc_interface(unsigned char *data, unsigned int len) {
 	// Pass the packet to the packet handler to add checksum, length, start and stop bytes.
-	packet_send_packet(data, len, PACKET_HANDLER);
+	packet_send_packet(data, len, PACKET_HANDLER_INDEX);
 }
 
 

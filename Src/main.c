@@ -52,7 +52,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "comm_uart.h"
-#include "packet.h"
 #include "bldc_interface.h"
 
 #include "24l01.h"
@@ -120,7 +119,7 @@ void delay_us(uint32_t nus)
 */
 void HAL_SYSTICK_Callback(void)
 {
-	packet_timerfunc();
+	bldc_packet_timer();
 	
 }
 
@@ -288,7 +287,10 @@ int main(void)
 		}
 		
 	}
-	//if(vesc_info.mcconf.)
+	if(vesc_info.mcconf.l_current_max != 0)
+	{
+		
+	}
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
