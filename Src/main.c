@@ -57,8 +57,7 @@
 #include "24l01.h"
 #include "control.h"
 
-#include "main.h"
-
+#include "stmflash.h"
 
 /* USER CODE END Includes */
 
@@ -75,6 +74,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 #define SETTINGS_ADDR DATA_EEPROM_BASE
+#define FLASH_CHECK (0x12345678)   //检验值
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -140,7 +140,7 @@ void HAL_RTCEx_WakeUpTimerEventCallback(RTC_HandleTypeDef *hrtc)
   */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-	SampleData.vin = 0;
+	
 }
 
 
@@ -157,6 +157,47 @@ void Sys_Enter_Standby(void)
 	HAL_PWR_EnterSTOPMode(PWR_LOWPOWERREGULATOR_ON, PWR_STOPENTRY_WFI);	 
 }
 
+#define ROUND_UP(x, align) (((int) (x) + (align - 1)) & ~(align - 1))
+/** 
+* @brief  : flash参数读取
+* @param  : 
+* @param  : 
+* @return : 
+*/
+int8_t setting_read(void)
+{
+	static uint32_t nword;
+	nword = sizeof(Setting_TypeDef);
+	nword = ROUND_UP(sizeof(Setting_TypeDef), 4)>>2;
+	
+	STMFLASH_Read(SETTINGS_ADDR,(uint32_t*)&setting,nword);
+	if(setting.check != FLASH_CHECK)
+	{
+		setting.check = FLASH_CHECK;
+		setting.adc_offset_crg_cur = 0;
+		setting.adc_offset_dcrg_cur = 0;
+		setting.adc_offset_vol = 0;
+		
+		STMFLASH_Write(SETTINGS_ADDR,(uint32_t*)&setting,nword);
+		return -1;
+	}
+	return 0;
+}
+
+
+/** 
+* @brief  : flash参数保存
+* @param  : 
+* @param  : 
+* @return : 
+*/
+int8_t setting_write(void)
+{
+	uint32_t nword = ROUND_UP(sizeof(Setting_TypeDef), 4)>>2;
+	setting.check = FLASH_CHECK;
+	STMFLASH_Write(SETTINGS_ADDR,(uint32_t*)&setting,nword);
+	return 0;
+}
 
 
 
@@ -195,7 +236,6 @@ int main(void)
 	
 	MX_USART1_UART_Init();
 	
-  
 	NRF24L01_Base_Init();//-- 包含SPI初始化
 	while (NRF24L01_Check())
     {
@@ -237,7 +277,7 @@ int main(void)
   /* Initialize all configured peripherals */
 
   /* USER CODE BEGIN 2 */
-  
+	
 	hrtc.Instance = RTC;
 	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
 	hrtc.Init.AsynchPrediv = 127;
@@ -257,6 +297,14 @@ int main(void)
 		HAL_RTCEx_BKUPWrite(&hrtc, RTC_BKP_DR0, 0x32F2);
 	}
 	
+//	if(0 > setting_read())
+//	{
+//		while(1)
+//		{
+//			HAL_Delay(100);
+//			LL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+//		}
+//	}setting_write();
 	control_Init();
 	bldc_comm_uart_init();
 	MX_ADC_Init();

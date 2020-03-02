@@ -129,6 +129,7 @@ static void send_packet(unsigned char *data, unsigned int len) {
 
 static void bldc_val_received(mc_values *val) {
 	
+	SampleData.vin = val->vin*100;
 	SampleData.bat_current = val->input_current*10;
 	SampleData.mot_current = val->motor_current*10;
 	SampleData.board_temp = val->temp_fet_filtered;

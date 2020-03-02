@@ -101,7 +101,6 @@ typedef struct
 	int16_t adc_offset_crg_cur;
 	int16_t adc_offset_dcrg_cur;
 	int16_t adc_offset_vol;
-	
 
 	
 }Setting_TypeDef;

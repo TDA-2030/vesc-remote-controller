@@ -1,7 +1,7 @@
 
 #include "main.h"
 #include "stmflash.h"
-#include "usart.h"
+
  
 
 
@@ -36,8 +36,8 @@ void STMFLASH_Write(uint32_t WriteAddr,uint32_t *pBuffer,uint32_t NumToWrite)
     {
         while(addrx<endaddr)		//扫清一切障碍.(对非FFFFFFFF的地方,先擦除)
 		{
-			if(STMFLASH_ReadWord(addrx)!=0XFFFFFFFF)//有非0XFFFFFFFF的地方,要擦除这个扇区
-			{   
+			if(STMFLASH_ReadWord(addrx)!=0X00000000)//有非0XFFFFFFFF的地方,要擦除这个扇区
+			{
                 FlashEraseInit.TypeErase=FLASH_TYPEERASE_PAGES;       //擦除类型，扇区擦除 
                 FlashEraseInit.NbPages=1;                             //一次只擦除一个扇区
 				FlashStatus = HAL_FLASHEx_Erase(&FlashEraseInit,&SectorError);
