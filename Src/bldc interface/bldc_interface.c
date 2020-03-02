@@ -381,6 +381,12 @@ void bldc_interface_set_mcconf(const mc_configuration *mcconf) {
     bldc_interface_send_packet(send_buffer, len + 1);
 }
 
+void bldc_interface_set_mcconf_temp(const mc_configuration *mcconf) {
+//	send_buffer[0] = COMM_SET_MCCONF_TEMP;
+//	int32_t len = confgenerator_serialize_mcconf(send_buffer + 1, mcconf);
+//    bldc_interface_send_packet(send_buffer, len + 1);
+}
+
 void bldc_interface_set_appconf(const app_configuration *appconf) {
 	send_buffer[0] = COMM_SET_APPCONF;
 	int32_t len = confgenerator_serialize_appconf(send_buffer + 1, appconf);

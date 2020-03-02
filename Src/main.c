@@ -283,14 +283,20 @@ int main(void)
 		{
 			HAL_Delay(200);
 			bldc_interface_get_mcconf();
+			t_end = HAL_GetTick() + 1000;
+			while(1)
+			{
+				bldc_packet_process();
+				if((HAL_GetTick() > t_end) || (vesc_info.mcconf.l_current_max != 0))
+				{
+					break;
+				}
+			}
 			break;
 		}
 		
 	}
-	if(vesc_info.mcconf.l_current_max != 0)
-	{
-		
-	}
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

@@ -8,7 +8,7 @@
 //读取指定地址的字(32位数据) 
 //faddr:读地址 
 //返回值:对应数据.
-uint32_t STMFLASH_ReadWord(uint32_t faddr)
+static uint32_t STMFLASH_ReadWord(uint32_t faddr)
 {
 	return *(__IO uint32_t *)faddr; 
 }
