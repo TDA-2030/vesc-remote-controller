@@ -264,7 +264,31 @@ int main(void)
 	
   /* USER CODE END 2 */
  
- 
+	uint8_t retry;
+	uint32_t t_end;
+	
+	retry = 5;
+	while(retry--)
+	{
+		bldc_interface_get_fw_version();
+		t_end = HAL_GetTick() + 1000;
+		while(1)
+		{
+			bldc_packet_process();
+			if((HAL_GetTick() > t_end) || (vesc_info.fw_major>2))
+			{
+				break;
+			}
+		}
+		if(vesc_info.fw_major>2)
+		{
+			HAL_Delay(200);
+			bldc_interface_get_mcconf();
+			break;
+		}
+		
+	}
+	//if(vesc_info.mcconf.)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

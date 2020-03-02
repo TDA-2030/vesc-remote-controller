@@ -642,6 +642,11 @@
               <FileType>1</FileType>
               <FilePath>..\Src\bldc interface\packet.c</FilePath>
             </File>
+            <File>
+              <FileName>confgenerator.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Src\bldc interface\confgenerator.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

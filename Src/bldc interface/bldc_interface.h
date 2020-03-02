@@ -27,6 +27,34 @@
 
 #include "datatypes.h"
 
+
+
+
+typedef struct{
+	int fw_major;
+	int fw_minor;
+	char hw_name[10];
+	uint8_t stm32_uuid[12];
+	mc_values values;
+	float rotor_pos;
+	mc_configuration mcconf;
+	app_configuration appconf;
+	float detect_cycle_int_limit;
+	float detect_coupling_k;
+	signed char detect_hall_table[8];
+	signed char detect_hall_res;
+	float dec_ppm;
+	float dec_ppm_len;
+	float dec_adc;
+	float dec_adc_voltage;
+	float dec_chuk;
+}vesc_info_t;
+
+extern vesc_info_t vesc_info;
+
+
+
+
 // interface functions
 void bldc_interface_init(void(*func)(unsigned char *data, unsigned int len));
 void bldc_interface_set_forward_func(void(*func)(unsigned char *data, unsigned int len));
