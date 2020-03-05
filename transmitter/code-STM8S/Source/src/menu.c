@@ -13,11 +13,366 @@
 #include "key.h"
 #include "pwm.h"
 
+#include <stddef.h>
 
 extern const unsigned char icon_power[];
 extern const unsigned char icon_light[];
 extern const unsigned char icon_arrow_up[];
 extern const unsigned char icon_arrow_down[];
+
+
+//------------------------
+
+//------------------------
+
+
+//============================
+typedef void (*win_fun_t)(void);
+typedef enum{
+	WIN_STATE_INIT,
+	WIN_STATE_EXEC,
+}win_state_e;
+
+static win_state_e g_win_state;
+static win_fun_t current_win = NULL;
+static win_fun_t previous_win = NULL;
+
+
+
+
+void win_exec(void);
+void win_set(win_fun_t *set);
+win_fun_t *win_get_current(void);
+win_fun_t *win_get_previous(void);
+
+static void (*exec_cb)(void) = NULL;
+
+void win_init(void)
+{
+	win_set(page_main);
+}
+
+void win_set(win_fun_t *set)
+{
+	if(NULL != set)
+	{
+		previous_win = current_win;
+		current_win = *set;
+		g_win_state = WIN_STATE_INIT;
+	}
+}
+
+win_fun_t *win_get_current(void)
+{
+	return &current_win;
+}
+
+win_fun_t *win_get_previous(void)
+{
+	return &previous_win;
+}
+
+void win_exec(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		if(NULL != current_win)
+		{
+			current_win();
+		}
+		g_win_state = WIN_STATE_EXEC;
+		break;
+	case WIN_STATE_EXEC:
+		if(NULL != current_win)
+		{
+			current_win();
+		}
+		break;
+	default:
+		break;
+	}
+	
+}
+//=============================
+
+
+void page_main(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		OLED_Clear();
+		OLED_ShowString(65,28,"km/h",16);
+		LCD_DrawLine(36,25,17,44);
+		LCD_DrawLine(92,25,111,44);
+		
+		LCD_DrawRectangle(38,0,90,5);
+		LCD_DrawRectangle(38,7,90,12);
+
+		OLED_ShowChar(121,0,'%',12,1);
+		OLED_ShowChar(30,51,'M',12,1);
+		break;
+	case WIN_STATE_EXEC:
+		if(Sys_Time>ms_time)
+      {
+          ms_time=Sys_Time+400;
+          if(setting.light_en)
+          {
+            OLED_DrawBMP(0,0,15,15,icon_light);  //图片显示
+          }
+          else
+          {
+            OLED_Fill(0,0,15,15,0);
+          }
+          
+          if(send_info.status)
+          {
+            OLED_DrawBMP(16,0,31,15,icon_power);  //图片显示
+          }
+          else
+          {
+            OLED_Fill(16,0,31,15,0);
+          }
+          
+          OLED_ShowNum(40,20,skate_info.speed/221,2,24);
+          OLED_ShowNum(45,44,send_info.throttle,4,8);
+      }
+      
+      if(Sys_Time>ls_time)
+      {
+          ls_time=Sys_Time+1100;
+          
+          if(send_info.direction==0)
+          {
+            OLED_DrawBMP(0,16,15,31,icon_arrow_up);  //图片显示
+          }
+          else
+          {
+            OLED_DrawBMP(0,16,15,31,icon_arrow_down);  //图片显示
+          }
+          
+          OLED_Fill(39,1,39+(ADC_Get_Voltage()-370),4,1);
+          OLED_Fill(39+(ADC_Get_Voltage()-370),1,89,4,0);
+          
+		  {
+			  uint16_t v;
+			  if(skate_info.voltage>2160)
+			      v = skate_info.voltage-2160;
+			  else
+				  v=0;
+			  v/=7;
+			  OLED_Fill(39,8,39+v,11,1);
+			  OLED_Fill(39+v,8,89,11,0);
+		  }
+          OLED_ShowNum(103,0,Sys_Tx_Rate,3,12);
+          OLED_ShowNum(0,51,skate_info.tacho_single,5,12);
+          
+          
+      }
+	break;
+	
+	default:
+		break;
+	}
+}
+
+
+void page_setting(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		OLED_Clear();
+      OLED_ShowString(0,0,"setings",16);
+	  cur_index=0;
+	  is_edit=0;
+	  is_chg=1;
+	  start=0;
+	  offset=0;
+	  send_info.year = skate_info.year;
+	  send_info.month = skate_info.month;
+	  send_info.day = skate_info.day;
+	  send_info.hour = skate_info.hour;
+	  send_info.min = skate_info.min;
+	  send_info.sec = skate_info.sec;
+		break;
+	case WIN_STATE_EXEC:
+		if(Sys_Time>ms_time)
+		{
+			uint8_t i,y;
+			ms_time=Sys_Time+100;
+			
+			if(Key_State.state==KEY_PRESS)
+			{
+				Key_State.state=0;
+				
+				if(Key_State.KeyNum==0x01)
+				{
+					if(is_edit==0)
+						is_edit=1;
+					else
+					{
+						is_edit=0;
+						is_chg=1;
+						if((cur_index>4)&&(cur_index<11))
+						{
+							chg_time=1;
+						}
+						
+					}
+				}
+				else if((Key_State.KeyNum==0x02)&&(is_edit==0))
+				{
+					cur_index++;
+					if(cur_index>=INDEX_MAX) cur_index=0;
+					
+					start = (cur_index>>2)<<2;
+					offset = cur_index%4;
+
+					is_chg=1;
+					
+				}
+			}
+			if(is_chg==1)
+			{
+				uint8_t index;
+				is_chg=0;
+				
+				for(i=0;i<4;i++)
+				{
+					y=16+(12*i);
+					index = start+i;
+					if(index>=INDEX_MAX)
+					{
+						OLED_Fill(0,y,127,y+12,0);
+					}
+					else
+					{
+						
+						if(i==offset)
+						{
+							OLED_ShowString_m(15,y,options[index],12,0);
+						}
+						else
+						{
+							OLED_ShowString_m(15,y,options[index],12,1);
+						}
+						OLED_ShowNum_n(0,y,index+1,2,12,1);
+						setting_page_dis_param(y,index);
+					}
+				}
+			}
+			if(is_edit==1)
+			{
+				setting_page_edit_param(16+(12*offset),start+offset);
+			}
+		}
+	break;
+	
+	default:
+		break;
+	}
+}
+
+
+void page_para(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		OLED_Clear();
+      OLED_ShowString(0,0,"setings",16);
+	  cur_index=0;
+	  is_edit=0;
+	  is_chg=1;
+	  start=0;
+	  offset=0;
+	  send_info.year = skate_info.year;
+	  send_info.month = skate_info.month;
+	  send_info.day = skate_info.day;
+	  send_info.hour = skate_info.hour;
+	  send_info.min = skate_info.min;
+	  send_info.sec = skate_info.sec;
+		break;
+	case WIN_STATE_EXEC:
+		if(Sys_Time>ms_time)
+		{
+			uint8_t i,y;
+			ms_time=Sys_Time+100;
+			
+			if(Key_State.state==KEY_PRESS)
+			{
+				Key_State.state=0;
+				
+				if(Key_State.KeyNum==0x01)
+				{
+					if(is_edit==0)
+						is_edit=1;
+					else
+					{
+						is_edit=0;
+						is_chg=1;
+						if((cur_index>4)&&(cur_index<11))
+						{
+							chg_time=1;
+						}
+						
+					}
+				}
+				else if((Key_State.KeyNum==0x02)&&(is_edit==0))
+				{
+					cur_index++;
+					if(cur_index>=INDEX_MAX) cur_index=0;
+					
+					start = (cur_index>>2)<<2;
+					offset = cur_index%4;
+
+					is_chg=1;
+					
+				}
+			}
+			if(is_chg==1)
+			{
+				uint8_t index;
+				is_chg=0;
+				
+				for(i=0;i<4;i++)
+				{
+					y=16+(12*i);
+					index = start+i;
+					if(index>=INDEX_MAX)
+					{
+						OLED_Fill(0,y,127,y+12,0);
+					}
+					else
+					{
+						
+						if(i==offset)
+						{
+							OLED_ShowString_m(15,y,options[index],12,0);
+						}
+						else
+						{
+							OLED_ShowString_m(15,y,options[index],12,1);
+						}
+						OLED_ShowNum_n(0,y,index+1,2,12,1);
+						setting_page_dis_param(y,index);
+					}
+				}
+			}
+			if(is_edit==1)
+			{
+				setting_page_edit_param(16+(12*offset),start+offset);
+			}
+		}
+	break;
+	
+	default:
+		break;
+	}
+}
+
 
 #define PAGE_MAIN 0
 #define PAGE_SETTING 66
@@ -253,7 +608,7 @@ void menu_process(void)
     {
       if(page!=PAGE_SETTING)
       {
-       		page=PAGE_SETTING;//����ҳ��
+       		page=PAGE_SETTING;//设置页面
       }
       else
       {
@@ -283,7 +638,7 @@ void menu_process(void)
     else if(Key_State.KeyNum==0x02 && page!=PAGE_SETTING)
     {
       Key_State.state=0;
-      page++;//����ҳ��
+      page++;//设置页面
       if(page>=PAGE_MAX)
         page=0;
       
@@ -295,7 +650,7 @@ void menu_process(void)
     {
 		uint16_t th;
 		hs_time=Sys_Time+20;
-		th=1023-ADC_Get_Val(1);   //--��ȡҡ��ֵ
+		th=1023-ADC_Get_Val(1);   //--读取摇杆值
 		if(th>512)
 		{
 			SetTIM1_PWM_DutyCycle('B',th-512);
@@ -337,7 +692,7 @@ void menu_process(void)
           ms_time=Sys_Time+400;
           if(setting.light_en)
           {
-            OLED_DrawBMP(0,0,15,15,icon_light);  //ͼƬ��ʾ
+            OLED_DrawBMP(0,0,15,15,icon_light);  //图片显示
           }
           else
           {
@@ -346,7 +701,7 @@ void menu_process(void)
           
           if(send_info.status)
           {
-            OLED_DrawBMP(16,0,31,15,icon_power);  //ͼƬ��ʾ
+            OLED_DrawBMP(16,0,31,15,icon_power);  //图片显示
           }
           else
           {
@@ -363,11 +718,11 @@ void menu_process(void)
           
           if(send_info.direction==0)
           {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_up);  //ͼƬ��ʾ
+            OLED_DrawBMP(0,16,15,31,icon_arrow_up);  //图片显示
           }
           else
           {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_down);  //ͼƬ��ʾ
+            OLED_DrawBMP(0,16,15,31,icon_arrow_down);  //图片显示
           }
           
           OLED_Fill(39,1,39+(ADC_Get_Voltage()-370),4,1);
