@@ -29,17 +29,17 @@ pdf [doc/RX-V5.0-schematic.pdf](doc/RX-V5.0-schematic.pdf)
 
 ## Transmitter model rendering
 
-![transmitter](image\transmitter.png)
+![transmitter](image/transmitter.png)
 
 
 
 ## transmitter PCB
 
-![transmitter-f](image\transmitter-f.png)
+![transmitter-f](image/transmitter-f.png)
 
-![transmitter-b](image\transmitter-b.png)
+![transmitter-b](image/transmitter-b.png)
 
 ## transmitter schematic
 
-![sch-t](image\sch-t.png)
+![sch-t](image/sch-t.png)
 
