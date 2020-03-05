@@ -15,3 +15,6 @@
 *.zhouli
 *.uvoptx
 
+3d-models/
+transmitter/code-STM8S/Project/Debug/
+transmitter/code-STM8S/Project/settings/

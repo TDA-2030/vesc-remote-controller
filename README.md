@@ -5,7 +5,8 @@ This remote controller is used to control the VESC motor controller. It can easi
 # Feature
 - Low-power Consumption
 - Support Remote Power Control
-- Real Time Data Backhaul
+- Real-time Data Backhaul
+- Show Real-time packet loss rate
 - Battery Current Monitoring
 - Input Voltage Range of 12 V to 60 V
 - Two LED Headlights
@@ -14,11 +15,31 @@ This remote controller is used to control the VESC motor controller. It can easi
 
 # Hardware
 
-## PCB
+## Receiver PCB
 ![](image/board-f.png)
 
 ![](image/board-b.png)
 
-## schematic
+## Receiver  schematic
+
+pdf [doc/RX-V5.0-schematic.pdf](doc/RX-V5.0-schematic.pdf)
+
 ![](image/sch-1.png)
 ![](image/sch-2.png)
+
+## Transmitter model rendering
+
+![transmitter](image\transmitter.png)
+
+
+
+## transmitter PCB
+
+![transmitter-f](image\transmitter-f.png)
+
+![transmitter-b](image\transmitter-b.png)
+
+## transmitter schematic
+
+![sch-t](image\sch-t.png)
+
