@@ -33,13 +33,13 @@ pdf [doc/RX-V5.0-schematic.pdf](doc/RX-V5.0-schematic.pdf)
 
 
 
-## transmitter PCB
+## Transmitter PCB
 
 ![transmitter-f](image/transmitter-f.png)
 
 ![transmitter-b](image/transmitter-b.png)
 
-## transmitter schematic
+## Transmitter schematic
 
 ![sch-t](image/sch-t.png)
 
