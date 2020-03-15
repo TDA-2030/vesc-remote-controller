@@ -15,6 +15,7 @@
 *.zhouli
 *.uvoptx
 
+.vscode/
 mininrf/
 PCB/
 3d-models/

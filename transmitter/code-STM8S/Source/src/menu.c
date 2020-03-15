@@ -12,6 +12,7 @@
 #include "timer.h"
 #include "key.h"
 #include "pwm.h"
+#include "windows.h"
 
 #include <stddef.h>
 
@@ -20,82 +21,14 @@ extern const unsigned char icon_light[];
 extern const unsigned char icon_arrow_up[];
 extern const unsigned char icon_arrow_down[];
 
-
 //------------------------
 
 //------------------------
-
 
 //============================
-typedef void (*win_fun_t)(void);
-typedef enum{
-	WIN_STATE_INIT,
-	WIN_STATE_EXEC,
-}win_state_e;
-
-static win_state_e g_win_state;
-static win_fun_t current_win = NULL;
-static win_fun_t previous_win = NULL;
 
 
-
-
-void win_exec(void);
-void win_set(win_fun_t *set);
-win_fun_t *win_get_current(void);
-win_fun_t *win_get_previous(void);
-
-static void (*exec_cb)(void) = NULL;
-
-void win_init(void)
-{
-	win_set(page_main);
-}
-
-void win_set(win_fun_t *set)
-{
-	if(NULL != set)
-	{
-		previous_win = current_win;
-		current_win = *set;
-		g_win_state = WIN_STATE_INIT;
-	}
-}
-
-win_fun_t *win_get_current(void)
-{
-	return &current_win;
-}
-
-win_fun_t *win_get_previous(void)
-{
-	return &previous_win;
-}
-
-void win_exec(void)
-{
-	switch (g_win_state)
-	{
-	case WIN_STATE_INIT:
-		if(NULL != current_win)
-		{
-			current_win();
-		}
-		g_win_state = WIN_STATE_EXEC;
-		break;
-	case WIN_STATE_EXEC:
-		if(NULL != current_win)
-		{
-			current_win();
-		}
-		break;
-	default:
-		break;
-	}
-	
-}
 //=============================
-
 
 void page_main(void)
 {
@@ -103,80 +36,77 @@ void page_main(void)
 	{
 	case WIN_STATE_INIT:
 		OLED_Clear();
-		OLED_ShowString(65,28,"km/h",16);
-		LCD_DrawLine(36,25,17,44);
-		LCD_DrawLine(92,25,111,44);
-		
-		LCD_DrawRectangle(38,0,90,5);
-		LCD_DrawRectangle(38,7,90,12);
+		OLED_ShowString(65, 28, "km/h", 16);
+		LCD_DrawLine(36, 25, 17, 44);
+		LCD_DrawLine(92, 25, 111, 44);
 
-		OLED_ShowChar(121,0,'%',12,1);
-		OLED_ShowChar(30,51,'M',12,1);
+		LCD_DrawRectangle(38, 0, 90, 5);
+		LCD_DrawRectangle(38, 7, 90, 12);
+
+		OLED_ShowChar(121, 0, '%', 12, 1);
+		OLED_ShowChar(30, 51, 'M', 12, 1);
 		break;
 	case WIN_STATE_EXEC:
-		if(Sys_Time>ms_time)
-      {
-          ms_time=Sys_Time+400;
-          if(setting.light_en)
-          {
-            OLED_DrawBMP(0,0,15,15,icon_light);  //图片显示
-          }
-          else
-          {
-            OLED_Fill(0,0,15,15,0);
-          }
-          
-          if(send_info.status)
-          {
-            OLED_DrawBMP(16,0,31,15,icon_power);  //图片显示
-          }
-          else
-          {
-            OLED_Fill(16,0,31,15,0);
-          }
-          
-          OLED_ShowNum(40,20,skate_info.speed/221,2,24);
-          OLED_ShowNum(45,44,send_info.throttle,4,8);
-      }
-      
-      if(Sys_Time>ls_time)
-      {
-          ls_time=Sys_Time+1100;
-          
-          if(send_info.direction==0)
-          {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_up);  //图片显示
-          }
-          else
-          {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_down);  //图片显示
-          }
-          
-          OLED_Fill(39,1,39+(ADC_Get_Voltage()-370),4,1);
-          OLED_Fill(39+(ADC_Get_Voltage()-370),1,89,4,0);
-          
-		  {
-			  uint16_t v;
-			  if(skate_info.voltage>2160)
-			      v = skate_info.voltage-2160;
-			  else
-				  v=0;
-			  v/=7;
-			  OLED_Fill(39,8,39+v,11,1);
-			  OLED_Fill(39+v,8,89,11,0);
-		  }
-          OLED_ShowNum(103,0,Sys_Tx_Rate,3,12);
-          OLED_ShowNum(0,51,skate_info.tacho_single,5,12);
-          
-          
-      }
-	break;
-	
+		if (Sys_Time > ms_time)
+		{
+			ms_time = Sys_Time + 400;
+			if (setting.light_en)
+			{
+				OLED_DrawBMP(0, 0, 15, 15, icon_light); //图片显示
+			}
+			else
+			{
+				OLED_Fill(0, 0, 15, 15, 0);
+			}
+
+			if (send_info.status)
+			{
+				OLED_DrawBMP(16, 0, 31, 15, icon_power); //图片显示
+			}
+			else
+			{
+				OLED_Fill(16, 0, 31, 15, 0);
+			}
+
+			OLED_ShowNum(40, 20, skate_info.speed / 221, 2, 24);
+			OLED_ShowNum(45, 44, send_info.throttle, 4, 8);
+		}
+
+		if (Sys_Time > ls_time)
+		{
+			ls_time = Sys_Time + 1100;
+
+			if (send_info.direction == 0)
+			{
+				OLED_DrawBMP(0, 16, 15, 31, icon_arrow_up); //图片显示
+			}
+			else
+			{
+				OLED_DrawBMP(0, 16, 15, 31, icon_arrow_down); //图片显示
+			}
+
+			OLED_Fill(39, 1, 39 + (ADC_Get_Voltage() - 370), 4, 1);
+			OLED_Fill(39 + (ADC_Get_Voltage() - 370), 1, 89, 4, 0);
+
+			{
+				uint16_t v;
+				if (skate_info.voltage > 2160)
+					v = skate_info.voltage - 2160;
+				else
+					v = 0;
+				v /= 7;
+				OLED_Fill(39, 8, 39 + v, 11, 1);
+				OLED_Fill(39 + v, 8, 89, 11, 0);
+			}
+			OLED_ShowNum(103, 0, Sys_Tx_Rate, 3, 12);
+			OLED_ShowNum(0, 51, skate_info.tacho_single, 5, 12);
+		}
+		break;
+
 	default:
 		break;
 	}
 }
-
 
 void page_setting(void)
 {
@@ -184,97 +114,95 @@ void page_setting(void)
 	{
 	case WIN_STATE_INIT:
 		OLED_Clear();
-      OLED_ShowString(0,0,"setings",16);
-	  cur_index=0;
-	  is_edit=0;
-	  is_chg=1;
-	  start=0;
-	  offset=0;
-	  send_info.year = skate_info.year;
-	  send_info.month = skate_info.month;
-	  send_info.day = skate_info.day;
-	  send_info.hour = skate_info.hour;
-	  send_info.min = skate_info.min;
-	  send_info.sec = skate_info.sec;
+		OLED_ShowString(0, 0, "setings", 16);
+		cur_index = 0;
+		is_edit = 0;
+		is_chg = 1;
+		start = 0;
+		offset = 0;
+		send_info.year = skate_info.year;
+		send_info.month = skate_info.month;
+		send_info.day = skate_info.day;
+		send_info.hour = skate_info.hour;
+		send_info.min = skate_info.min;
+		send_info.sec = skate_info.sec;
 		break;
 	case WIN_STATE_EXEC:
-		if(Sys_Time>ms_time)
+		if (Sys_Time > ms_time)
 		{
-			uint8_t i,y;
-			ms_time=Sys_Time+100;
-			
-			if(Key_State.state==KEY_PRESS)
+			uint8_t i, y;
+			ms_time = Sys_Time + 100;
+
+			if (Key_State.state == KEY_PRESS)
 			{
-				Key_State.state=0;
-				
-				if(Key_State.KeyNum==0x01)
+				Key_State.state = 0;
+
+				if (Key_State.KeyNum == 0x01)
 				{
-					if(is_edit==0)
-						is_edit=1;
+					if (is_edit == 0)
+						is_edit = 1;
 					else
 					{
-						is_edit=0;
-						is_chg=1;
-						if((cur_index>4)&&(cur_index<11))
+						is_edit = 0;
+						is_chg = 1;
+						if ((cur_index > 4) && (cur_index < 11))
 						{
-							chg_time=1;
+							chg_time = 1;
 						}
-						
 					}
 				}
-				else if((Key_State.KeyNum==0x02)&&(is_edit==0))
+				else if ((Key_State.KeyNum == 0x02) && (is_edit == 0))
 				{
 					cur_index++;
-					if(cur_index>=INDEX_MAX) cur_index=0;
-					
-					start = (cur_index>>2)<<2;
-					offset = cur_index%4;
+					if (cur_index >= INDEX_MAX)
+						cur_index = 0;
 
-					is_chg=1;
-					
+					start = (cur_index >> 2) << 2;
+					offset = cur_index % 4;
+
+					is_chg = 1;
 				}
 			}
-			if(is_chg==1)
+			if (is_chg == 1)
 			{
 				uint8_t index;
-				is_chg=0;
-				
-				for(i=0;i<4;i++)
+				is_chg = 0;
+
+				for (i = 0; i < 4; i++)
 				{
-					y=16+(12*i);
-					index = start+i;
-					if(index>=INDEX_MAX)
+					y = 16 + (12 * i);
+					index = start + i;
+					if (index >= INDEX_MAX)
 					{
-						OLED_Fill(0,y,127,y+12,0);
+						OLED_Fill(0, y, 127, y + 12, 0);
 					}
 					else
 					{
-						
-						if(i==offset)
+
+						if (i == offset)
 						{
-							OLED_ShowString_m(15,y,options[index],12,0);
+							OLED_ShowString_m(15, y, options[index], 12, 0);
 						}
 						else
 						{
-							OLED_ShowString_m(15,y,options[index],12,1);
+							OLED_ShowString_m(15, y, options[index], 12, 1);
 						}
-						OLED_ShowNum_n(0,y,index+1,2,12,1);
-						setting_page_dis_param(y,index);
+						OLED_ShowNum_n(0, y, index + 1, 2, 12, 1);
+						setting_page_dis_param(y, index);
 					}
 				}
 			}
-			if(is_edit==1)
+			if (is_edit == 1)
 			{
-				setting_page_edit_param(16+(12*offset),start+offset);
+				setting_page_edit_param(16 + (12 * offset), start + offset);
 			}
 		}
-	break;
-	
+		break;
+
 	default:
 		break;
 	}
 }
-
 
 void page_para(void)
 {
@@ -282,601 +210,304 @@ void page_para(void)
 	{
 	case WIN_STATE_INIT:
 		OLED_Clear();
-      OLED_ShowString(0,0,"setings",16);
-	  cur_index=0;
-	  is_edit=0;
-	  is_chg=1;
-	  start=0;
-	  offset=0;
-	  send_info.year = skate_info.year;
-	  send_info.month = skate_info.month;
-	  send_info.day = skate_info.day;
-	  send_info.hour = skate_info.hour;
-	  send_info.min = skate_info.min;
-	  send_info.sec = skate_info.sec;
+		OLED_ShowString(0, 0, "setings", 16);
+		cur_index = 0;
+		is_edit = 0;
+		is_chg = 1;
+		start = 0;
+		offset = 0;
+		send_info.year = skate_info.year;
+		send_info.month = skate_info.month;
+		send_info.day = skate_info.day;
+		send_info.hour = skate_info.hour;
+		send_info.min = skate_info.min;
+		send_info.sec = skate_info.sec;
 		break;
 	case WIN_STATE_EXEC:
-		if(Sys_Time>ms_time)
-		{
-			uint8_t i,y;
-			ms_time=Sys_Time+100;
-			
-			if(Key_State.state==KEY_PRESS)
-			{
-				Key_State.state=0;
-				
-				if(Key_State.KeyNum==0x01)
-				{
-					if(is_edit==0)
-						is_edit=1;
-					else
-					{
-						is_edit=0;
-						is_chg=1;
-						if((cur_index>4)&&(cur_index<11))
-						{
-							chg_time=1;
-						}
-						
-					}
-				}
-				else if((Key_State.KeyNum==0x02)&&(is_edit==0))
-				{
-					cur_index++;
-					if(cur_index>=INDEX_MAX) cur_index=0;
-					
-					start = (cur_index>>2)<<2;
-					offset = cur_index%4;
+	{
+		uint8_t i, y;
 
-					is_chg=1;
-					
-				}
-			}
-			if(is_chg==1)
+		if (PRESS_DOWN)
+		{
+			Key_State.state = 0;
+
+			if (Key_State.KeyNum == 0x01)
 			{
-				uint8_t index;
-				is_chg=0;
-				
-				for(i=0;i<4;i++)
+				if (is_edit == 0)
+					is_edit = 1;
+				else
 				{
-					y=16+(12*i);
-					index = start+i;
-					if(index>=INDEX_MAX)
+					is_edit = 0;
+					is_chg = 1;
+					if ((cur_index > 4) && (cur_index < 11))
 					{
-						OLED_Fill(0,y,127,y+12,0);
-					}
-					else
-					{
-						
-						if(i==offset)
-						{
-							OLED_ShowString_m(15,y,options[index],12,0);
-						}
-						else
-						{
-							OLED_ShowString_m(15,y,options[index],12,1);
-						}
-						OLED_ShowNum_n(0,y,index+1,2,12,1);
-						setting_page_dis_param(y,index);
+						chg_time = 1;
 					}
 				}
 			}
-			if(is_edit==1)
+			else if ((Key_State.KeyNum == 0x02) && (is_edit == 0))
 			{
-				setting_page_edit_param(16+(12*offset),start+offset);
+				cur_index++;
+				if (cur_index >= INDEX_MAX)
+					cur_index = 0;
+
+				start = (cur_index >> 2) << 2;
+				offset = cur_index % 4;
+
+				is_chg = 1;
 			}
 		}
-	break;
-	
+		if (is_chg == 1)
+		{
+			uint8_t index;
+			is_chg = 0;
+
+			for (i = 0; i < 4; i++)
+			{
+				y = 16 + (12 * i);
+				index = start + i;
+				if (index >= INDEX_MAX)
+				{
+					OLED_Fill(0, y, 127, y + 12, 0);
+				}
+				else
+				{
+
+					if (i == offset)
+					{
+						OLED_ShowString_m(15, y, options[index], 12, 0);
+					}
+					else
+					{
+						OLED_ShowString_m(15, y, options[index], 12, 1);
+					}
+					OLED_ShowNum_n(0, y, index + 1, 2, 12, 1);
+					setting_page_dis_param(y, index);
+				}
+			}
+		}
+		if (is_edit == 1)
+		{
+			setting_page_edit_param(16 + (12 * offset), start + offset);
+		}
+
+	}break;
+
 	default:
 		break;
 	}
 }
 
+void page_init(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		OLED_Clear();
+		break;
+	case WIN_STATE_EXEC:
+		if ((LED_STDBY == 0) || (LED_CHRG == 0))
+		{
+			if ((LED_CHRG == 0))
+			{
+				OLED_ShowString(0, 0, "charging", 16);
+				OLED_ShowNum(70, 0, (ADC_Get_Voltage() - 370) << 1, 3, 16);
+				OLED_ShowString(94, 0, "%", 16);
+				OLED_ShowNum(0, 20, ADC_Get_Voltage(), 3, 16);
+			}
+			else
+			{
+				OLED_ShowString(0, 0, "fully charged", 16);
+			}
+			delay_us(5000);
+		}
 
-#define PAGE_MAIN 0
-#define PAGE_SETTING 66
-#define PAGE_EXIT_SETTING 67
-#define PAGE_PARAM1 1
-#define PAGE_PARAM2 2
-#define PAGE_PARAM3 3
-#define PAGE_MAX   4
+		if (LONG_PRESS_HOLD == btn_1.event)
+		{
+			PB_DDR |= 1 << 2; //数据方向寄存器 1为输出，0为输入
+			PB_CR1 |= 1 << 2; //推挽输出
+			PB_ODR_ODR2 = 1;
+			SetTIM1_PWM_DutyCycle('R', 0);
+			SetTIM1_PWM_DutyCycle('G', 500);
+			SetTIM1_PWM_DutyCycle('B', 0);
+			OLED_DrawBMP(0, 0, 127, 63, BMP1); //图片显示
+			delay_ms(700);
+			while (LONG_PRESS_HOLD == btn_1.event)
+				;
+			SetTIM1_PWM_DutyCycle('G', 0);
 
-uint8_t page=0;
+			win_set(page_connect);
+		}
+		break;
+	default:
+		break;
+	}
+}
 
-static uint8_t cur_index=0,is_edit=0;
-static uint8_t start,offset;
-static uint8_t is_chg=1;
-uint8_t chg_time=0;
+void page_connect(void)
+{
+	switch (g_win_state)
+	{
+	case WIN_STATE_INIT:
+		OLED_Clear();
+		while (NRF24L01_Check())
+		{
+			OLED_ShowString(0, 0, "NRF24L01 ERROR", 16);
+			OLED_Refresh_Gram();
+		}
+		RF24L01_Init();
+		RF24L01_Set_Mode(MODE_TX); //设置为发射模式
+
+		OLED_Clear();
+		OLED_Refresh_Gram();
+		OLED_ShowString(0, 0, "connecting", 16);
+		OLED_ShowString(62, 48, "version: . ", 12);
+		OLED_ShowNum(110, 48, MAJOR_VERSION, 1, 12);
+		OLED_ShowNum(122, 48, MINOR_VERSION, 1, 12);
+		OLED_Refresh_Gram();
+		InitTIM2(4, 1000 - 1); //--定时器初始化 16分频
+		break;
+	case WIN_STATE_EXEC:
+		if (system.state != SYSTEM_STATE_IDLE)
+		{
+			delay_ms(20);
+			OLED_Fill(8, 23, 8 + key_time, 25, 1);
+			OLED_Refresh_Gram();
+			if (++key_time > 112)
+			{
+				OLED_ShowString(8, 26, "failed!!!", 16);
+				OLED_Refresh_Gram();
+				delay_ms(800);
+				system.state = SYSTEM_STATE_IDLE;
+			}
+		}
+		else
+		{
+			InitTIM2(4, 10000 - 1); //--定时器初始化 16分频
+			win_set(page_main);
+		}
+		break;
+	}
+}
 
 #define INDEX_MAX 11
-const unsigned char options[INDEX_MAX][9]={
-"power   ",
-"light1  ",
-"light2  ",
-"direct  ",
-"off_time",
-"year    ",
-"month   ",
-"day     ",
-"hour    ",
-"minute  ",
-"seconds ",
+const unsigned char options[INDEX_MAX][9] = {
+	"power   ",
+	"light1  ",
+	"light2  ",
+	"direct  ",
+	"off_time",
+	"year    ",
+	"month   ",
+	"day     ",
+	"hour    ",
+	"minute  ",
+	"seconds ",
 };
 
-uint32_t hs_time=0,ls_time=0,ms_time=0;
-
-
-void page_init(uint8_t p);
-
-
-void menu_init(void)
+void setting_page_dis_param(uint8_t y, uint8_t index)
 {
-  page=PAGE_MAIN;
-  page_init(page);
-}
-
-
-void page_init(uint8_t p)
-{
-  switch(p)
-  {
-    case PAGE_MAIN:
-      OLED_Clear();
-      OLED_ShowString(65,28,"km/h",16);
-      LCD_DrawLine(36,25,17,44);
-      LCD_DrawLine(92,25,111,44);
-      
-      LCD_DrawRectangle(38,0,90,5);
-      LCD_DrawRectangle(38,7,90,12);
-
-      OLED_ShowChar(121,0,'%',12,1);
-      OLED_ShowChar(30,51,'M',12,1);
-    break;
-    
-    case PAGE_SETTING:
-      OLED_Clear();
-      OLED_ShowString(0,0,"setings",16);
-	  cur_index=0;
-	  is_edit=0;
-	  is_chg=1;
-	  start=0;
-	  offset=0;
-	  send_info.year = skate_info.year;
-	  send_info.month = skate_info.month;
-	  send_info.day = skate_info.day;
-	  send_info.hour = skate_info.hour;
-	  send_info.min = skate_info.min;
-	  send_info.sec = skate_info.sec;
-    break;
-	
-	case PAGE_EXIT_SETTING:
-      OLED_Clear();
-	  OLED_ShowString(0,0,"warning",16);
-      OLED_ShowString(0,16,"Please release",16);
-	  OLED_ShowString(0,32,"the throttle!",16);
-	  
-    break;
-    
-    case PAGE_PARAM1:
-      OLED_Clear();
-      OLED_ShowString(0,0,"parameter1",16);
-      OLED_ShowString(0,16,"U:  . v",12);
-      OLED_ShowString(0,28,"Ib:   . a",12);
-      OLED_ShowString(0,40,"Im:   . a",12);
-      OLED_ShowString(0,52,"P:    w",12);
-      
-      OLED_ShowString(64,16,"rpm:     ",12);
-      OLED_ShowString(64,28,"tem:  `C",12);
-      OLED_ShowString(64,40,"dah:  .  ",12);
-      OLED_ShowString(64,52,"rah:  .  ",12);
-      
-    break;
-    
-    case PAGE_PARAM2:
-      OLED_Clear();
-      OLED_ShowString(0,0,"parameter2",16);
-      OLED_ShowString(0,16,"t:  -  -  |  -  -  ",12);
-      OLED_ShowString(0,28,"dcc:   .  a",12);
-      OLED_ShowString(0,40,"cc:  .  a",12);
-	  //OLED_ShowString(0,40,"cc:  .  a",12);
-    break;
-    
-    case PAGE_PARAM3:
-      OLED_Clear();
-      OLED_ShowString(0,0,"parameter3",16);
-	  OLED_ShowString(0,16,"dwh:  .  ",12);
-      OLED_ShowString(0,28,"rwh:  .  ",12);
-    break;
-    
-  default:break;
-  }
-}
-
-
-void setting_page_dis_param(uint8_t y,uint8_t index)
-{
-	uint8_t x=80;
-	switch(index)
+	uint8_t x = 80;
+	switch (index)
 	{
-		case 0:
-			OLED_ShowNum_n(x,y,send_info.status,5,12,1);
+	case 0:
+		OLED_ShowNum_n(x, y, send_info.status, 5, 12, 1);
 		break;
-		case 1:
-			OLED_ShowNum_n(x,y,setting.light1,5,12,1);
+	case 1:
+		OLED_ShowNum_n(x, y, setting.light1, 5, 12, 1);
 		break;
-		case 2:
-			OLED_ShowNum_n(x,y,setting.light2,5,12,1);
+	case 2:
+		OLED_ShowNum_n(x, y, setting.light2, 5, 12, 1);
 		break;
-		case 3:
-			OLED_ShowNum_n(x,y,send_info.direction,5,12,1);
+	case 3:
+		OLED_ShowNum_n(x, y, send_info.direction, 5, 12, 1);
 		break;
-		case 4:
-			OLED_ShowNum_n(x,y,setting.auto_off_time,5,12,1);
+	case 4:
+		OLED_ShowNum_n(x, y, setting.auto_off_time, 5, 12, 1);
 		break;
-		case 5:
-			OLED_ShowNum_n(x,y,send_info.year,5,12,1);
+	case 5:
+		OLED_ShowNum_n(x, y, send_info.year, 5, 12, 1);
 		break;
-		case 6:
-			OLED_ShowNum_n(x,y,send_info.month,5,12,1);
+	case 6:
+		OLED_ShowNum_n(x, y, send_info.month, 5, 12, 1);
 		break;
-		case 7:
-			OLED_ShowNum_n(x,y,send_info.day,5,12,1);
+	case 7:
+		OLED_ShowNum_n(x, y, send_info.day, 5, 12, 1);
 		break;
-		case 8:
-			OLED_ShowNum_n(x,y,send_info.hour,5,12,1);
+	case 8:
+		OLED_ShowNum_n(x, y, send_info.hour, 5, 12, 1);
 		break;
-		case 9:
-			OLED_ShowNum_n(x,y,send_info.min,5,12,1);
+	case 9:
+		OLED_ShowNum_n(x, y, send_info.min, 5, 12, 1);
 		break;
-		case 10:
-			OLED_ShowNum_n(x,y,send_info.sec,5,12,1);
+	case 10:
+		OLED_ShowNum_n(x, y, send_info.sec, 5, 12, 1);
 		break;
-		
-		case 11:
-			
+
+	case 11:
+
 		break;
-		default:break;
+	default:
+		break;
 	}
 }
 
-void setting_page_edit_param(uint8_t y,uint8_t index)
+void setting_page_edit_param(uint8_t y, uint8_t index)
 {
-	uint8_t x=80;
-	uint16_t v = 1023-ADC_Get_Val(1);
-	switch(index)
+	uint8_t x = 80;
+	uint16_t v = 1023 - ADC_Get_Val(1);
+	switch (index)
 	{
-		case 0:
-			send_info.status = v>512?1:0;
-			OLED_ShowNum_n(x,y,send_info.status,5,12,0);
+	case 0:
+		send_info.status = v > 512 ? 1 : 0;
+		OLED_ShowNum_n(x, y, send_info.status, 5, 12, 0);
 		break;
-		case 1:
-			setting.light1 = v/10;
-			OLED_ShowNum_n(x,y,setting.light1,5,12,0);
+	case 1:
+		setting.light1 = v / 10;
+		OLED_ShowNum_n(x, y, setting.light1, 5, 12, 0);
 		break;
-		case 2:
-			setting.light2 = v/10;
-			OLED_ShowNum_n(x,y,setting.light2,5,12,0);
+	case 2:
+		setting.light2 = v / 10;
+		OLED_ShowNum_n(x, y, setting.light2, 5, 12, 0);
 		break;
-		case 3:
-			send_info.direction = v>512?0:1;
-			OLED_ShowNum_n(x,y,send_info.direction,5,12,0);
+	case 3:
+		send_info.direction = v > 512 ? 0 : 1;
+		OLED_ShowNum_n(x, y, send_info.direction, 5, 12, 0);
 		break;
-		case 4:
-			setting.auto_off_time = (v+5)*60;
-			system.auto_off_timer=0;
-			OLED_ShowNum_n(x,y,setting.auto_off_time,5,12,0);
+	case 4:
+		setting.auto_off_time = (v + 5) * 60;
+		system.auto_off_timer = 0;
+		OLED_ShowNum_n(x, y, setting.auto_off_time, 5, 12, 0);
 		break;
-		case 5:
-			send_info.year = v/10;
-			OLED_ShowNum_n(x,y,send_info.year,5,12,0);
+	case 5:
+		send_info.year = v / 10;
+		OLED_ShowNum_n(x, y, send_info.year, 5, 12, 0);
 		break;
-		case 6:
-			send_info.month = v/85;
-			OLED_ShowNum_n(x,y,send_info.month,5,12,0);
+	case 6:
+		send_info.month = v / 85;
+		OLED_ShowNum_n(x, y, send_info.month, 5, 12, 0);
 		break;
-		case 7:
-			send_info.day = v/33;
-			OLED_ShowNum_n(x,y,send_info.day,5,12,0);
+	case 7:
+		send_info.day = v / 33;
+		OLED_ShowNum_n(x, y, send_info.day, 5, 12, 0);
 		break;
-		case 8:
-			send_info.hour = v/44;
-			OLED_ShowNum_n(x,y,send_info.hour,5,12,0);
+	case 8:
+		send_info.hour = v / 44;
+		OLED_ShowNum_n(x, y, send_info.hour, 5, 12, 0);
 		break;
-		case 9:
-			send_info.min = v/17;
-			OLED_ShowNum_n(x,y,send_info.min,5,12,0);
+	case 9:
+		send_info.min = v / 17;
+		OLED_ShowNum_n(x, y, send_info.min, 5, 12, 0);
 		break;
-		case 10:
-			send_info.sec = v/17;
-			OLED_ShowNum_n(x,y,send_info.sec,5,12,0);
+	case 10:
+		send_info.sec = v / 17;
+		OLED_ShowNum_n(x, y, send_info.sec, 5, 12, 0);
 		break;
-		
-		case 11:
-			
+
+	case 11:
+
 		break;
-		default:break;
+	default:
+		break;
 	}
 }
-
-void menu_process(void)
-{
-  if(Key_State.state==KEY_LONG_PRESS)
-  {
-    Key_State.state=0;
-    if(Key_State.KeyNum==0x02)
-    {
-      if(page!=PAGE_SETTING)
-      {
-       		page=PAGE_SETTING;//设置页面
-      }
-      else
-      {
-		  page=PAGE_EXIT_SETTING;
-      }
-	  page_init(page);
-    }
-  }
-  
-  
-  if(Key_State.state==KEY_PRESS)
-  {
-	  system.auto_off_timer=0;
-    if(Key_State.KeyNum==0x01 && page==PAGE_MAIN)
-    {
-      Key_State.state=0;
-        
-        if(setting.light_en)
-        {
-          setting.light_en=0;
-        }
-        else
-        {
-          setting.light_en=1;
-        }
-      }   
-    else if(Key_State.KeyNum==0x02 && page!=PAGE_SETTING)
-    {
-      Key_State.state=0;
-      page++;//设置页面
-      if(page>=PAGE_MAX)
-        page=0;
-      
-      page_init(page);
-    }
-  }
-  
-  if(Sys_Time>hs_time)
-    {
-		uint16_t th;
-		hs_time=Sys_Time+20;
-		th=1023-ADC_Get_Val(1);   //--读取摇杆值
-		if(th>512)
-		{
-			SetTIM1_PWM_DutyCycle('B',th-512);
-			SetTIM1_PWM_DutyCycle('R',0);
-		}
-		else
-		{
-			SetTIM1_PWM_DutyCycle('R',512-th);
-			SetTIM1_PWM_DutyCycle('B',0);
-		}
-		if((page!=PAGE_SETTING)&&(page!=PAGE_EXIT_SETTING))
-		{
-			send_info.throttle=th;
-		}
-		else
-		{
-			send_info.throttle=512;
-		}
-		
-		 if(0==setting.light_en)
-        {
-          send_info.light1 = 0;
-          send_info.light2 = 0;
-        }
-        else
-        {
-          send_info.light1 = setting.light1;
-          send_info.light2 = setting.light2;
-        }
-        
-    }
-  
-  switch(page)
-  {
-    case PAGE_MAIN:
-     
-      if(Sys_Time>ms_time)
-      {
-          ms_time=Sys_Time+400;
-          if(setting.light_en)
-          {
-            OLED_DrawBMP(0,0,15,15,icon_light);  //图片显示
-          }
-          else
-          {
-            OLED_Fill(0,0,15,15,0);
-          }
-          
-          if(send_info.status)
-          {
-            OLED_DrawBMP(16,0,31,15,icon_power);  //图片显示
-          }
-          else
-          {
-            OLED_Fill(16,0,31,15,0);
-          }
-          
-          OLED_ShowNum(40,20,skate_info.speed/221,2,24);
-          OLED_ShowNum(45,44,send_info.throttle,4,8);
-      }
-      
-      if(Sys_Time>ls_time)
-      {
-          ls_time=Sys_Time+1100;
-          
-          if(send_info.direction==0)
-          {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_up);  //图片显示
-          }
-          else
-          {
-            OLED_DrawBMP(0,16,15,31,icon_arrow_down);  //图片显示
-          }
-          
-          OLED_Fill(39,1,39+(ADC_Get_Voltage()-370),4,1);
-          OLED_Fill(39+(ADC_Get_Voltage()-370),1,89,4,0);
-          
-		  {
-			  uint16_t v;
-			  if(skate_info.voltage>2160)
-			      v = skate_info.voltage-2160;
-			  else
-				  v=0;
-			  v/=7;
-			  OLED_Fill(39,8,39+v,11,1);
-			  OLED_Fill(39+v,8,89,11,0);
-		  }
-          OLED_ShowNum(103,0,Sys_Tx_Rate,3,12);
-          OLED_ShowNum(0,51,skate_info.tacho_single,5,12);
-          
-          
-      }
-    break;
-    
-    case PAGE_PARAM1:
-      if(Sys_Time>ms_time)
-      {
-        ms_time=Sys_Time+500;
-        OLED_ShowNum(12,16,skate_info.voltage/100,2,12);OLED_ShowNum(30,16,skate_info.voltage/10,1,12);
-        OLED_ShowNum(18,28,skate_info.bat_current/10,3,12);OLED_ShowNum(42,28,skate_info.bat_current,1,12);
-        OLED_ShowNum(18,40,skate_info.mot_current/10,3,12);OLED_ShowNum(42,40,skate_info.mot_current,1,12);
-        OLED_ShowNum(12,52,(skate_info.bat_current*(skate_info.voltage/100))/10,4,12);
-        
-        OLED_ShowNum(88,16,skate_info.speed,5,12);
-        OLED_ShowNum(88,28,skate_info.board_temp,2,12);
-        OLED_ShowNum(88,40,skate_info.ah_drawn/100,2,12);OLED_ShowNum(106,40,skate_info.ah_drawn,2,12);
-        OLED_ShowNum(88,52,skate_info.ah_regen/100,2,12);OLED_ShowNum(106,52,skate_info.ah_regen,2,12);
-      }
-    break;
-    
-    case PAGE_PARAM2:
-      if(Sys_Time>ls_time)
-      {
-        ls_time=Sys_Time+1000;
-        OLED_ShowNum(12,16,skate_info.year,2,12);
-        OLED_ShowNum(30,16,skate_info.month,2,12);
-        OLED_ShowNum(48,16,skate_info.day,2,12);
-        OLED_ShowNum(66,16,skate_info.hour,2,12);
-        OLED_ShowNum(84,16,skate_info.min,2,12);
-        OLED_ShowNum(102,16,skate_info.sec,2,12);
-        
-        OLED_ShowNum(24,28,skate_info.discharge_cur/100,3,12);OLED_ShowNum(48,28,skate_info.discharge_cur,2,12);
-        OLED_ShowNum(18,40,skate_info.charge_cur/100,2,12);OLED_ShowNum(36,40,skate_info.charge_cur,2,12);
-      }
-    break;
-	
-  	case PAGE_PARAM3:
-		if(Sys_Time>ms_time)
-		{
-			ms_time=Sys_Time+500;
-			OLED_ShowNum(24,16,skate_info.wh_drawn/100,2,12);OLED_ShowNum(42,16,skate_info.wh_drawn,2,12);
-			OLED_ShowNum(24,28,skate_info.wh_regen/100,2,12);OLED_ShowNum(42,28,skate_info.wh_regen,2,12);
-		}
-	break;
-    
-  case PAGE_SETTING:
-	{
-		if(Sys_Time>ms_time)
-		{
-			uint8_t i,y;
-			ms_time=Sys_Time+100;
-			
-			if(Key_State.state==KEY_PRESS)
-			{
-				Key_State.state=0;
-				
-				if(Key_State.KeyNum==0x01)
-				{
-					if(is_edit==0)
-						is_edit=1;
-					else
-					{
-						is_edit=0;
-						is_chg=1;
-						if((cur_index>4)&&(cur_index<11))
-						{
-							chg_time=1;
-						}
-						
-					}
-				}
-				else if((Key_State.KeyNum==0x02)&&(is_edit==0))
-				{
-					cur_index++;
-					if(cur_index>=INDEX_MAX) cur_index=0;
-					
-					start = (cur_index>>2)<<2;
-					offset = cur_index%4;
-
-					is_chg=1;
-					
-				}
-			}
-			if(is_chg==1)
-			{
-				uint8_t index;
-				is_chg=0;
-				
-				for(i=0;i<4;i++)
-				{
-					y=16+(12*i);
-					index = start+i;
-					if(index>=INDEX_MAX)
-					{
-						OLED_Fill(0,y,127,y+12,0);
-					}
-					else
-					{
-						
-						if(i==offset)
-						{
-							OLED_ShowString_m(15,y,options[index],12,0);
-						}
-						else
-						{
-							OLED_ShowString_m(15,y,options[index],12,1);
-						}
-						OLED_ShowNum_n(0,y,index+1,2,12,1);
-						setting_page_dis_param(y,index);
-					}
-				}
-			}
-			if(is_edit==1)
-			{
-				setting_page_edit_param(16+(12*offset),start+offset);
-			}
-		}
-	}
-    break;
-  	case PAGE_EXIT_SETTING:
-		if(Sys_Time>ms_time)
-		{
-			uint16_t a;
-			ms_time=Sys_Time+10;
-			a=ADC_Get_Val(1);
-			if((a<530) && (a>494))
-			{
-				page=PAGE_MAIN;
-				page_init(page);
-			}
-		}
-	break;
-    default:break;
-  }
-}
-
-
-
-

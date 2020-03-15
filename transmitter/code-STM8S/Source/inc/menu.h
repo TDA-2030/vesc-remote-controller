@@ -2,10 +2,11 @@
 #define _MENU_H__
 
 
-extern uint8_t chg_time;
+void win_exec(void);
+void win_set(win_fun_t *set);
+win_fun_t *win_get_current(void);
+win_fun_t *win_get_previous(void);
+void win_init(void);
 
-
-void menu_init(void);
-void menu_process(void);
 
 #endif

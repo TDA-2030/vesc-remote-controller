@@ -180,10 +180,10 @@ __interrupt void TIM2_CAP_COM_IRQHandler(void)
 __interrupt void TIM3_UPD_OVF_BRK_IRQHandler(void)
 {
   static u8 t=0;
-  if(++t==10)
+  if(++t==5)
   {
     t=0;
-    key_read();
+    button_ticks();
   }
   Sys_Time++;
   /* Clear the IT pending Bit */
