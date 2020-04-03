@@ -37,7 +37,6 @@ Transmitter you need to use IAR IDE to compile, while Receiver uses STM32 to com
 ![](image/board-f.png)
 
 
-
 ## Receiver  schematic
 
 PDF [doc/RX-V5.0-schematic.pdf](doc/RX-V5.0-schematic.pdf)
@@ -46,7 +45,6 @@ PDF [doc/RX-V5.0-schematic.pdf](doc/RX-V5.0-schematic.pdf)
 ## Transmitter model rendering
 
 ![transmitter](image/transmitter.png)
-
 
 
 
