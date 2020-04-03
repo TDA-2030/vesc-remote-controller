@@ -14,7 +14,7 @@
 *.scvd
 *.zhouli
 *.uvoptx
-.vscode
+**/.vscode
 
 .vscode/
 mininrf/
