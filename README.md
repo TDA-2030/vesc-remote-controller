@@ -22,12 +22,14 @@ This remote controller is used to control the VESC motor controller. It can easi
 
 # Repository Structure
 
-- **transmitter**: transmitter code
-- **receiver**: receiver code
+- **transmitter**: Transmitter code
+- **receiver**: Receiver code
 - **image**: pcb or schematic
 - **doc**: Documentation
 
-The transmitter use STM8S as micro controller
+# how to build
+
+Transmitter you need to use IAR IDE to compile, while Receiver uses STM32 to compile with MDK-V5
 
 # Hardware
 

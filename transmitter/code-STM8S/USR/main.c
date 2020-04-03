@@ -18,14 +18,13 @@
 #include "timer.h"
 #include "key.h"
 #include "pwm.h"
-#include "menu.h"
+#include "windows.h"
 #include "main.h"
 #include "stm8s_flash.h"
 
 Setting_TypeDef setting = {0};
 System_TypeDef system = {0};
 
-extern const unsigned char BMP1[];
 
 void setting_read(void);
 void setting_write(void);
