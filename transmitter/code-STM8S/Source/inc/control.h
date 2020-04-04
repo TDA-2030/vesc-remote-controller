@@ -7,16 +7,14 @@
 
 
 
-
-
-//ĞèÒªÏÂ´ïµÄÊı¾İ½á¹¹Ìå
+//éœ€è¦ä¸‹è¾¾çš„æ•°æ®ç»“æ„ä½“
 typedef struct {
 
-    uint8_t status;     //ÏµÍ³×´Ì¬ 0£º¿ÕÏĞ£¬1£ºÔËĞĞ
-    uint16_t throttle;             //ÓÍÃÅ 
+    uint8_t status;     //ç³»ç»ŸçŠ¶æ€ 0ï¼šç©ºé—²ï¼Œ1ï¼šè¿è¡Œ
+    uint16_t throttle;             //æ²¹é—¨ 
     uint8_t direction;
-    uint8_t light1;             //´óµÆ¿ØÖÆ1
-    uint8_t light2;             //´óµÆ¿ØÖÆ2
+    uint8_t light1;             //å¤§ç¯æ§åˆ¶1
+    uint8_t light2;             //å¤§ç¯æ§åˆ¶2
 	
 	uint8_t year,month,day,hour,min,sec;
 
@@ -25,17 +23,17 @@ extern send_info_t send_info;
 
 typedef struct {
   
-        uint16_t speed;            //ËÙ¶ÈÖµ
-	uint32_t tacho;           //Àï³Ì
-        uint16_t tacho_single;    //µ¥´ÎÀï³Ì
-        uint16_t voltage;         //µç³ØµçÑ¹
-	uint16_t mot_current;     //µç»úµçÁ÷
-	uint16_t bat_current;     //µç³ØµçÁ÷
-	uint8_t board_temp;       //°å×ÓÎÂ¶È
-	uint16_t wh_drawn;        //ÏûºÄÄÜÁ¿
-	uint16_t wh_regen;        //ÔÙÉúÄÜÁ¿
-        uint16_t ah_drawn;        //ÏûºÄÄÜÁ¿
-	uint16_t ah_regen;        //ÔÙÉúÄÜÁ¿
+        uint16_t speed;            //é€Ÿåº¦å€¼
+	uint32_t tacho;           //é‡Œç¨‹
+        uint16_t tacho_single;    //å•æ¬¡é‡Œç¨‹
+        uint16_t voltage;         //ç”µæ± ç”µå‹
+	uint16_t mot_current;     //ç”µæœºç”µæµ
+	uint16_t bat_current;     //ç”µæ± ç”µæµ
+	uint8_t board_temp;       //æ¿å­æ¸©åº¦
+	uint16_t wh_drawn;        //æ¶ˆè€—èƒ½é‡
+	uint16_t wh_regen;        //å†ç”Ÿèƒ½é‡
+        uint16_t ah_drawn;        //æ¶ˆè€—èƒ½é‡
+	uint16_t ah_regen;        //å†ç”Ÿèƒ½é‡
         
         uint16_t charge_cur;
         uint16_t discharge_cur;
@@ -55,7 +53,8 @@ extern u8 Sys_Tx_Rate;
 extern u8 nrf_tx_buf[];
 extern u8 nrf_rx_buf[];
 
-void Control_Init(void);
+void control_Init(void);
+void control_power(uint8_t state);
 u8 Rx_Data_Handle(void);
 u8 Upload_data(void);
 void prepare_upload_cmd(void);

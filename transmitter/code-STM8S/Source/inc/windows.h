@@ -6,14 +6,17 @@ typedef enum
 {
 	WIN_STATE_INIT,
 	WIN_STATE_EXEC,
+	WIN_STATE_EXIT,
 } win_state_e;
-extern win_state_e g_win_state;
 
+void win_init(void);
 void win_exec(void);
 void win_set(win_fun_t set);
 win_fun_t win_get_current(void);
 win_fun_t win_get_previous(void);
-void win_init(void);
+win_state_e win_get_state(void);
+void win_set_flash_time(uint8_t n_ms);
+
 
 
 #endif

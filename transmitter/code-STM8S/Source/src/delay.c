@@ -1,7 +1,7 @@
 
 /******************** (C) COPYRIGHT  奇来科技 *************************************
  * 文件名  ：delay_time.c
- * 描述    ：延时函数     
+ * 描述    ：延时函数
  * 实验平台： STM8开发板
  * 库版本  ：V1.0.0
  * 技术支持：lijinnan@qiqirobot.com
@@ -21,8 +21,9 @@
 **********************************************************************************************************/
 void delay_us(u16 nCount)
 {
-    nCount *=3; 
-    while(--nCount);
+    nCount *= 3;
+
+    while (--nCount);
 }
 
 /**********************************************************************************************************
@@ -33,12 +34,19 @@ void delay_us(u16 nCount)
 **********************************************************************************************************/
 void delay_ms(u16 nCount)
 {
-  uint32_t t=Sys_Time+nCount;
-//    while(nCount--)
-//    {
-//        delay_us(1000);
-//    }
-    while(Sys_Time<t)delay_us(10);
+#ifdef CONFIG_DELAY_NOP
+
+    while (nCount--)
+    {
+        delay_us(1000);
+    }
+
+#else
+    uint32_t t = Sys_Time + nCount;
+
+    while (Sys_Time < t)delay_us(10);
+
+#endif
 }
 
 

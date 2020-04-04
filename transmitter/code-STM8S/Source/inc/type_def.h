@@ -1,25 +1,18 @@
-/******************** (C) COPYRIGHT  ·ç³ÛiCreateÇ¶ÈëÊ½¿ª·¢¹¤×÷ÊÒ ********************
- * ÎÄ¼şÃû  £ºtype_def.h
- * ÃèÊö    £º·ç³ÛiCreate STM8¿ª·¢°å×¨ÓÃÍ·ÎÄ¼ş 
- * ÊµÑéÆ½Ì¨£ºiCreate STM8¿ª·¢°å
- * ¼Ä´æÆ÷°æ±¾  £ºV1.0.0
- * ×÷Õß    £ºling_guansheng  QQ£º779814207
- * ²©¿Í    £º
- * ĞŞ¸ÄÊ±¼ä £º2012-6-12
-**********************************************************************************/
-#ifndef __type_def_h
-#define __type_def_h
 
-/*Ö÷¿ØĞ¾Æ¬µÄÍ·ÎÄ¼ş*/
+#ifndef __TYPE_DEF_H
+#define __TYPE_DEF_H
+
+/*ä¸»æ§èŠ¯ç‰‡çš„å¤´æ–‡ä»¶*/
 #include "iostm8s105k6.h"
 
-/*bool ÀàĞÍÍ·ÎÄ¼ş*/
+/*bool ç±»å‹å¤´æ–‡ä»¶*/
 #include "stdbool.h"
+#include "stddef.h"
 
-/*×ÜÖĞ¶ÏÍ·ÎÄ¼ş*/
+/*æ€»ä¸­æ–­å¤´æ–‡ä»¶*/
 #include "intrinsics.h"
 
-/*³£ÓÃÊı¾İÀàĞÍ¶¨Òå*/
+/*å¸¸ç”¨æ•°æ®ç±»å‹å®šä¹‰*/
 typedef unsigned char     uint8_t;
 typedef unsigned short    uint16_t;
 typedef unsigned long int    uint32_t;
@@ -41,4 +34,4 @@ typedef unsigned char BYTE;
 #endif
 
 
-/******************* (C) COPYRIGHT ·ç³ÛiCreateÇ¶ÈëÊ½¿ª·¢¹¤×÷ÊÒ *****END OF FILE****/
+/******************* (C) COPYRIGHT é£é©°iCreateåµŒå…¥å¼å¼€å‘å·¥ä½œå®¤ *****END OF FILE****/

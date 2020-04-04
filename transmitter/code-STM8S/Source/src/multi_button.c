@@ -4,6 +4,7 @@
  */
 
 #include "multi_button.h"
+#include "string.h"
 
 #define EVENT_CB(ev)   if(handle->cb[ev])handle->cb[ev]((Button*)handle)
 	

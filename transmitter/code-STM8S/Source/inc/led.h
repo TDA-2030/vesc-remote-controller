@@ -7,10 +7,11 @@
 //#define LED_B     PC_ODR_ODR2
 //#define LED_LG    PC_ODR_ODR1
 
-/* LEDº¯Êý¶¨Òå */
-void LED_conf(void);
-void LED_Flash(u16 interval,u8 times);
-
+/* LEDå‡½æ•°å®šä¹‰ */
+void led_init(void);
+void led_set_rgb(uint8_t r, uint8_t g, uint8_t b);
+void led_set_hsv(uint16_t h, uint8_t s, uint8_t v);
+void led_set_headlight(uint16_t v);
 
 #endif
 

@@ -2,7 +2,7 @@
 #define _MAIN_H__
 
 #define SETTING_FLASH_ADDR (0)
-#define FLASH_CHECK (0x1278)   //¼ìÑéÖµ
+#define FLASH_CHECK (0x1278)   //æ£€éªŒå€¼
 
 #define MAJOR_VERSION 2
 #define MINOR_VERSION 1
@@ -32,10 +32,10 @@ typedef struct
 extern System_TypeDef system;
 
 enum{
-	SYSTEM_STATE_IDLE,     //ÒÑÁ¬½Ó£¬Î´¿ª»ú
-	SYSTEM_STATE_RUNNING,  //ÔËÐÐÖÐ
-	SYSTEM_STATE_CHARGING, //³äµçÖÐ
-	SYSTEM_STATE_NO_SIGNAL,//ÐÅºÅ¶ªÊ§
+	SYSTEM_STATE_IDLE,     //å·²è¿žæŽ¥ï¼Œæœªå¼€æœº
+	SYSTEM_STATE_RUNNING,  //è¿è¡Œä¸­
+	SYSTEM_STATE_CHARGING, //å……ç”µä¸­
+	SYSTEM_STATE_NO_SIGNAL,//ä¿¡å·ä¸¢å¤±
 };
 
 extern uint32_t Sys_Time;

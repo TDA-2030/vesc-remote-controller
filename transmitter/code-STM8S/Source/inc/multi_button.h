@@ -6,12 +6,13 @@
 #ifndef _MULTI_BUTTON_H_
 #define _MULTI_BUTTON_H_
 
+#include "type_def.h"
 
 //According to your need to modify the constants.
 #define TICKS_INTERVAL    5	//ms
-#define DEBOUNCE_TICKS    2	//MAX 8
-#define SHORT_TICKS       (100 /TICKS_INTERVAL)
-#define LONG_TICKS        (1000 /TICKS_INTERVAL)
+#define DEBOUNCE_TICKS    1	//MAX 8
+#define SHORT_TICKS       (120 /TICKS_INTERVAL)
+#define LONG_TICKS        (2000 /TICKS_INTERVAL)
 
 
 typedef void (*BtnCallback)(void*);
