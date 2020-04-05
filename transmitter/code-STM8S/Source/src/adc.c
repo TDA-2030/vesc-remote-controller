@@ -1,6 +1,6 @@
 /******************** (C) COPYRIGHT  风驰iCreate嵌入式开发工作室 ***************************
  * 文件名  ：adc.c
- * 描述    ：AD配置函数库   
+ * 描述    ：AD配置函数库
  * 实验平台：iCreate STM8开发板
  * 寄存器版本  ：V2.0.0
  * 作者    ：ling_guansheng  QQ：779814207
@@ -16,6 +16,10 @@
 #include "adc.h"
 
 
+#define ARRAY_LEN  12
+static uint16_t filter_array[ARRAY_LEN] = {0};
+static uint8_t filter_index = 0;
+
 #define REFE_VOL (122.0f) //放大了100倍
 
 
@@ -25,15 +29,20 @@
  * 输入  ：无
  *
  * 输出  ：无
- * 返回  ：无 
- * 调用  ：外部调用 
+ * 返回  ：无
+ * 调用  ：外部调用
  *************************************************************************/
 void ADC_conf(void)
 {
-	ADC_CR1 = (2<<4)|(0<<1)|(0<<0);    //ADC时钟输入频率为16MHz 这里设置分频系数为2  单次转换模式 先禁止ADC转换       
-	ADC_CR2 = (1<<3)|(0<<1);           //设置数据右对齐  禁止扫描模式
-	ADC_TDRL|= 3<<2;                      //AIN2,AIN3禁止施密特触发器功能 
-	ADC_CR1 |= 1<<0;                      //第一次写1是从低功耗模式唤醒 
+    ADC_CR1 = (2 << 4) | (0 << 1) | (0 << 0); //ADC时钟输入频率为16MHz 这里设置分频系数为2  单次转换模式 先禁止ADC转换
+    ADC_CR2 = (1 << 3) | (0 << 1);     //设置数据右对齐  禁止扫描模式
+    ADC_TDRL |= 3 << 2;                   //AIN2,AIN3禁止施密特触发器功能
+    ADC_CR1 |= 1 << 0;                    //第一次写1是从低功耗模式唤醒
+
+    for (size_t i = 0; i < ARRAY_LEN; i++)
+    {
+        filter_array[i] = 370;
+    }
 }
 
 
@@ -44,36 +53,45 @@ void ADC_conf(void)
  * 输入  ：无
  *
  * 输出  ：无
- * 返回  ：无 
- * 调用  ：内部调用 
+ * 返回  ：无
+ * 调用  ：内部调用
  *************************************************************************/
 uint16_t ADC_Get_Val(u8 channel)
 {
-    uint16_t value,temph;        
+    uint16_t value, temph;
     uint8_t templ;                  // 定义templ存储低8位数据  temph存储高8位数据
-
-	channel &= 0x0f;
-	ADC_CSR &= ~0x0f; //清除上次通道号
-    ADC_CSR |= (channel<<0);         //不用外部触发 禁止转换结束中断 设置转换通道
+    channel &= 0x0f;
+    ADC_CSR &= ~0x0f; //清除上次通道号
+    ADC_CSR |= (channel << 0);       //不用外部触发 禁止转换结束中断 设置转换通道
     ADC_CR1 |= 1;
 
-    while(!(ADC_CSR & 0x80));           //等待转换完成
-    templ = ADC_DRL;
-    temph = ADC_DRH;                  //读取ADC转换  在左对齐和右对齐模式下 读取数据的顺序不同  参考STM8寄存器.PDFP371   
-	ADC_CSR &= ~0x80;   //清除标志位
+    while (!(ADC_CSR & 0x80));          //等待转换完成
 
+    templ = ADC_DRL;
+    temph = ADC_DRH;                  //读取ADC转换  在左对齐和右对齐模式下 读取数据的顺序不同  参考STM8寄存器.PDFP371
+    ADC_CSR &= ~0x80;   //清除标志位
     value = (unsigned int)(templ | (temph << 8));   //注意是10位的转换精度 value、temph应为unsigned int 变量
     return  value;
 }
 
-u16 ADC_Get_Voltage(void)
+uint16_t ADC_Get_Voltage(void)
 {
-    float temp=REFE_VOL * (float)ADC_Get_Val(BATT_CH);
-    u16 Vref=ADC_Get_Val(VREF_CH);
-	
-    temp=temp/Vref;
- 
-	temp = ((float)temp)*5.228;
-    return (u16)temp;///放大了100倍
-                  
+    uint16_t sum = 0;
+    float temp = REFE_VOL * (float)ADC_Get_Val(BATT_CH);
+    uint16_t Vref = ADC_Get_Val(VREF_CH);
+    temp = temp / Vref;
+    temp = ((float)temp) * 5.228;
+    filter_array[filter_index++] = (uint16_t)temp;
+
+    if (filter_index == ARRAY_LEN)
+    {
+        filter_index = 0;
+    }
+
+    for (size_t i = 0; i < ARRAY_LEN; i++)
+    {
+        sum += filter_array[i];
+    }
+
+    return sum / ARRAY_LEN; ///放大了100倍
 }

@@ -12,7 +12,8 @@
 //[5]0 1 2 3 ... 127
 //[6]0 1 2 3 ... 127
 //[7]0 1 2 3 ... 127
-uint8_t OLED_GRAM[128][8];
+static uint8_t OLED_GRAM[128][8];
+static uint8_t g_show_mode = 1;
 
 //更新显存到LCD
 void OLED_Refresh_Gram(void)
@@ -29,12 +30,16 @@ void OLED_Refresh_Gram(void)
     }
 }
 
+void OLED_ShowModeSet(uint8_t mode)
+{
+    g_show_mode = mode;
+}
 
 #if OLED_MODE==1
 //向SSD1106写入一个字节。
 //dat:要写入的数据/命令
 //cmd:数据/命令标志 0,表示命令;1,表示数据;
-void OLED_WR_Byte(u8 dat, u8 cmd)
+void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 {
     DATAOUT(dat);
 
@@ -53,9 +58,9 @@ void OLED_WR_Byte(u8 dat, u8 cmd)
 //向SSD1306写入一个字节。
 //dat:要写入的数据/命令
 //cmd:数据/命令标志 0,表示命令;1,表示数据;
-void OLED_WR_Byte(u8 dat, u8 cmd)
+void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 {
-    u8 i;
+    uint8_t i;
 
     if (cmd)
         OLED_DC_Set();
@@ -87,20 +92,20 @@ void OLED_WR_Byte(u8 dat, u8 cmd)
 #endif
 
 
-////开启OLED显示
-//void OLED_Display_On(void)
-//{
-//	OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC命令
-//	OLED_WR_Byte(0X14,OLED_CMD);  //DCDC ON
-//	OLED_WR_Byte(0XAF,OLED_CMD);  //DISPLAY ON
-//}
-////关闭OLED显示
-//void OLED_Display_Off(void)
-//{
-//	OLED_WR_Byte(0X8D,OLED_CMD);  //SET DCDC命令
-//	OLED_WR_Byte(0X10,OLED_CMD);  //DCDC OFF
-//	OLED_WR_Byte(0XAE,OLED_CMD);  //DISPLAY OFF
-//}
+//开启OLED显示
+void OLED_Display_On(void)
+{
+    OLED_WR_Byte(0X8D, OLED_CMD); //SET DCDC命令
+    OLED_WR_Byte(0X14, OLED_CMD); //DCDC ON
+    OLED_WR_Byte(0XAF, OLED_CMD); //DISPLAY ON
+}
+//关闭OLED显示
+void OLED_Display_Off(void)
+{
+    OLED_WR_Byte(0X8D, OLED_CMD); //SET DCDC命令
+    OLED_WR_Byte(0X10, OLED_CMD); //DCDC OFF
+    OLED_WR_Byte(0XAE, OLED_CMD); //DISPLAY OFF
+}
 
 
 //画点
@@ -124,9 +129,9 @@ void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t t)
 //x1,y1,x2,y2 填充区域的对角坐标
 //确保x1<=x2;y1<=y2 0<=x1<=127 0<=y1<=63
 //dot:0,清空;1,填充
-void OLED_Fill(u8 x1, u8 y1, u8 x2, u8 y2, u8 dot)
+void OLED_Fill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t dot)
 {
-    u8 x, y;
+    uint8_t x, y;
 
     for (x = x1; x <= x2; x++)
     {
@@ -137,7 +142,7 @@ void OLED_Fill(u8 x1, u8 y1, u8 x2, u8 y2, u8 dot)
 //清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样!!!
 void OLED_Clear(void)
 {
-    u8 i, n;
+    uint8_t i, n;
 
     for (i = 0; i < 8; i++)for (n = 0; n < 128; n++)OLED_GRAM[n][i] = 0X00;
 
@@ -147,13 +152,12 @@ void OLED_Clear(void)
 //在指定位置显示一个字符,包括部分字符
 //x:0~127
 //y:0~63
-//mode:0,反白显示;1,正常显示
 //size:选择字体 12/16/24
-void OLED_ShowChar(u8 x, u8 y, u8 chr, u8 size, u8 mode)
+void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size)
 {
-    u8 temp, t, t1;
-    u8 y0 = y;
-    u8 csize = (size / 8 + ((size % 8) ? 1 : 0)) * (size / 2);		//得到字体一个字符对应点阵集所占的字节数
+    uint8_t temp, t, t1;
+    uint8_t y0 = y;
+    uint8_t csize = (size / 8 + ((size % 8) ? 1 : 0)) * (size / 2);		//得到字体一个字符对应点阵集所占的字节数
 
     if (8 == size) csize = 6;
 
@@ -175,8 +179,8 @@ void OLED_ShowChar(u8 x, u8 y, u8 chr, u8 size, u8 mode)
 
         for (t1 = 0; t1 < 8; t1++)
         {
-            if (temp & 0x80)OLED_DrawPoint(x, y, mode);
-            else OLED_DrawPoint(x, y, !mode);
+            if (temp & 0x80)OLED_DrawPoint(x, y, g_show_mode);
+            else OLED_DrawPoint(x, y, !g_show_mode);
 
             temp <<= 1;
             y++;
@@ -192,9 +196,9 @@ void OLED_ShowChar(u8 x, u8 y, u8 chr, u8 size, u8 mode)
 }
 
 //m^n函数
-u32 mypow(u8 m, u8 n)
+uint32_t mypow(uint8_t m, uint8_t n)
 {
-    u32 result = 1;
+    uint32_t result = 1;
 
     while (n--)result *= m;
 
@@ -206,11 +210,11 @@ u32 mypow(u8 m, u8 n)
 //size:字体大小
 //mode:模式	0,填充模式;1,叠加模式
 //num:数值(0~4294967295);
-void OLED_ShowNum(u8 x, u8 y, u32 num, u8 len, u8 size)
+void OLED_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size)
 {
-    u8 t, temp;
-    u8 enshow = 0;
-    u8 offset;
+    uint8_t t, temp;
+    uint8_t enshow = 0;
+    uint8_t offset;
 
     if (size == 8) offset = 6;
     else offset =	size / 2;
@@ -223,40 +227,73 @@ void OLED_ShowNum(u8 x, u8 y, u32 num, u8 len, u8 size)
         {
             if (temp == 0)
             {
-                OLED_ShowChar(x + (offset * t), y, '0', size, 1);
+                OLED_ShowChar(x + (offset * t), y, '0', size);
                 continue;
             }
             else enshow = 1;
         }
 
-        OLED_ShowChar(x + (offset * t), y, temp + '0', size, 1);
+        OLED_ShowChar(x + (offset * t), y, temp + '0', size);
     }
 }
 
-void OLED_ShowNum_n(u8 x, u8 y, u32 num, u8 len, u8 size, u8 m)
+static int8_t my_i2a(int32_t in_num, char *out_str)
 {
-    u8 t, temp;
-    u8 enshow = 0;
-    u8 offset;
+    uint8_t remainder;
+    uint8_t len = 0;
 
-    if (size == 8) offset = 6;
-    else offset =	size / 2;
-
-    for (t = 0; t < len; t++)
+    if (NULL == out_str)
     {
-        temp = (num / mypow(10, len - t - 1)) % 10;
+        return 0;
+    }
 
-        if (enshow == 0 && t < (len - 1))
+    do
+    {
+        remainder = in_num % 10;
+        in_num = in_num / 10;
+        *(out_str++) = remainder + '0';
+        len++;
+    }
+    while (in_num);
+
+    return len;
+}
+
+void OLED_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len, uint8_t point, uint8_t size)
+{
+    uint8_t width;
+    char buf[10];
+    int8_t num_len;
+
+    if (8 == size) width = 6;
+    else width = size >> 1;
+
+    x += (width * len);
+    num_len = my_i2a(num, buf);
+
+    if (uint != 0)
+    {
+        OLED_ShowChar(x+width, y, uint, size);
+    }
+
+    for (size_t i = 0; i < len; i++)
+    {
+        if (i == point)
         {
-            if (temp == 0)
-            {
-                OLED_ShowChar(x + (offset * t), y, ' ', size, m);
-                continue;
-            }
-            else enshow = 1;
+            OLED_ShowChar(x, y, '.', size);
+            x -= width;
         }
 
-        OLED_ShowChar(x + (offset * t), y, temp + '0', size, m);
+        if (i < num_len)
+        {
+            OLED_ShowChar(x, y, (uint8_t)buf[i], size);
+        }
+        else
+        {
+            OLED_ShowChar(x, y, '0', size);
+        }
+
+        x -= width;
     }
 }
 
@@ -264,7 +301,7 @@ void OLED_ShowNum_n(u8 x, u8 y, u32 num, u8 len, u8 size, u8 m)
 //x,y:起点坐标
 //size:字体大小
 //*p:字符串起始地址
-void OLED_ShowString(u8 x, u8 y, const u8 *p, u8 size)
+void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *p, uint8_t size)
 {
     while ((*p <= '~') && (*p >= ' ')) //判断是不是非法字符!
     {
@@ -280,7 +317,7 @@ void OLED_ShowString(u8 x, u8 y, const u8 *p, u8 size)
             OLED_Clear();
         }
 
-        OLED_ShowChar(x, y, *p, size, 1);
+        OLED_ShowChar(x, y, *p, size);
 
         if (8 == size)x += 6;
         else  x += size / 2;
@@ -288,39 +325,16 @@ void OLED_ShowString(u8 x, u8 y, const u8 *p, u8 size)
         p++;
     }
 }
-void OLED_ShowString_m(u8 x, u8 y, const u8 *p, u8 size, u8 m)
-{
-    while ((*p <= '~') && (*p >= ' ')) //判断是不是非法字符!
-    {
-        if (x > (128 - (size / 2)))
-        {
-            x = 0;
-            y += size;
-        }
 
-        if (y > (64 - size))
-        {
-            y = x = 0;
-            OLED_Clear();
-        }
-
-        OLED_ShowChar(x, y, *p, size, m);
-
-        if (8 == size)x += 6;
-        else  x += size / 2;
-
-        p++;
-    }
-}
 //坐标设置
-void OLED_Set_Pos(u8 x, u8 y)
+void OLED_Set_Pos(uint8_t x, uint8_t y)
 {
     OLED_WR_Byte(0xb0 + y, OLED_CMD);
     OLED_WR_Byte(((x & 0xf0) >> 4) | 0x10, OLED_CMD);
     OLED_WR_Byte((x & 0x0f), OLED_CMD);
 }
 /***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y的范围0～63*****************/
-void OLED_DrawBMP(u8 x0, u8 y0, u8 x1, u8 y1, const u8 BMP[])
+void OLED_DrawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t BMP[])
 {
     unsigned char x, y;
     y1++;
@@ -343,9 +357,9 @@ void OLED_DrawBMP(u8 x0, u8 y0, u8 x1, u8 y1, const u8 BMP[])
 //画线
 //x1,y1:起点坐标
 //x2,y2:终点坐标
-void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
+void LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
-    u16 t;
+    uint16_t t;
     int xerr = 0, yerr = 0, delta_x, delta_y, distance;
     int incx, incy, uRow, uCol;
     delta_x = x2 - x1; //计算坐标增量
@@ -374,7 +388,7 @@ void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
 
     for (t = 0; t <= distance + 1; t++) //画线输出
     {
-        OLED_DrawPoint(uRow, uCol, 1); //画点
+        OLED_DrawPoint(uRow, uCol, g_show_mode); //画点
         xerr += delta_x ;
         yerr += delta_y ;
 
@@ -393,7 +407,7 @@ void LCD_DrawLine(u16 x1, u16 y1, u16 x2, u16 y2)
 }
 //画矩形
 //(x1,y1),(x2,y2):矩形的对角坐标
-void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2)
+void LCD_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
     LCD_DrawLine(x1, y1, x2, y1);
     LCD_DrawLine(x1, y1, x1, y2);
@@ -403,7 +417,7 @@ void LCD_DrawRectangle(u16 x1, u16 y1, u16 x2, u16 y2)
 //在指定位置画一个指定大小的圆
 //(x,y):中心点
 //r    :半径
-void LCD_Draw_Circle(u16 x0, u16 y0, u8 r)
+void LCD_Draw_Circle(uint16_t x0, uint16_t y0, uint8_t r)
 {
     int a, b;
     int di;
@@ -413,14 +427,14 @@ void LCD_Draw_Circle(u16 x0, u16 y0, u8 r)
 
     while (a <= b)
     {
-        OLED_DrawPoint(x0 + a, y0 - b, 1);       //5
-        OLED_DrawPoint(x0 + b, y0 - a, 1);       //0
-        OLED_DrawPoint(x0 + b, y0 + a, 1);       //4
-        OLED_DrawPoint(x0 + a, y0 + b, 1);       //6
-        OLED_DrawPoint(x0 - a, y0 + b, 1);       //1
-        OLED_DrawPoint(x0 - b, y0 + a, 1);
-        OLED_DrawPoint(x0 - a, y0 - b, 1);       //2
-        OLED_DrawPoint(x0 - b, y0 - a, 1);       //7
+        OLED_DrawPoint(x0 + a, y0 - b, g_show_mode);       //5
+        OLED_DrawPoint(x0 + b, y0 - a, g_show_mode);       //0
+        OLED_DrawPoint(x0 + b, y0 + a, g_show_mode);       //4
+        OLED_DrawPoint(x0 + a, y0 + b, g_show_mode);       //6
+        OLED_DrawPoint(x0 - a, y0 + b, g_show_mode);       //1
+        OLED_DrawPoint(x0 - b, y0 + a, g_show_mode);
+        OLED_DrawPoint(x0 - a, y0 - b, g_show_mode);       //2
+        OLED_DrawPoint(x0 - b, y0 - a, g_show_mode);       //7
         a++;
 
         //使用Bresenham算法画圆
@@ -436,10 +450,10 @@ void LCD_Draw_Circle(u16 x0, u16 y0, u8 r)
 //
 //
 ////显示信号强度
-//void OLED_Show_RSSI(u8 x,u8 y,u8 val)
+//void OLED_Show_RSSI(uint8_t x,uint8_t y,uint8_t val)
 //{
-//	u8 t,temp;
-//	const u8 icon[][16]={
+//	uint8_t t,temp;
+//	const uint8_t icon[][16]={
 //	{0x08,0x18,0x28,0x48,0xF8,0x48,0x28,0x18,0x08,0x00,0x00,0x00,0x00,0x00,0x00,0x00},
 //	{0x00,0x00,0x00,0x00,0xFF,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*"RSSI",0*/
 //	};

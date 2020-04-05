@@ -32,17 +32,18 @@ void setting_write(void);
 
 int main(void)
 {
-    uint32_t _1s_time = 0;
+    uint32_t time_1s = 0;
+    uint32_t time_200ms = 0;
     system_clock_init();
     KEY_Init();
-    led_init(); //--LED初始化
+    led_init();
     setting_read();
     system.state = SYSTEM_STATE_NO_SIGNAL;
     control_Init();                                                        //--外部控制初始化
     ADC_conf();                                                            //--ADC模块初始化 PB2,3端口
     NRF24L01_Base_Init();                                                  //-- 包含SPI初始化
-    NRF24L01_Write_Reg(NRF_WRITE_REG + STATUS, NRF24L01_Read_Reg(STATUS)); //清除TX_DS或MAX_RT中断标志
-    InitTIM3(4, 1000 - 1);
+    NRF24L01_Clear_IRQ_Flag(IRQ_ALL);
+    InitTIM3(4, 1000 - 1);  //--系统ms计时
     EnableInterrupt; //--开启中断
     OLED_Init();     //--屏幕初始化
     menu_init();
@@ -51,9 +52,9 @@ int main(void)
     {
         win_exec();
 
-        if (Sys_Time > _1s_time)
+        if (Sys_Time > time_1s)
         {
-            _1s_time = Sys_Time + 1000;
+            time_1s = Sys_Time + 1000;
             system.auto_off_timer++;
 
             if (system.auto_off_timer > setting.auto_off_time)
@@ -61,7 +62,12 @@ int main(void)
                 btn_1.event = LONG_PRESS_HOLD;
             }
         }
-        
+
+        if (Sys_Time > time_200ms)
+        {
+            time_200ms = Sys_Time + 200;
+            system.bat_vol = ADC_Get_Voltage();
+        }
     }
 }
 

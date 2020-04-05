@@ -16,7 +16,7 @@ win_fun_t win_get_current(void);
 win_fun_t win_get_previous(void);
 win_state_e win_get_state(void);
 void win_set_flash_time(uint8_t n_ms);
-
+void win_set_exec_callback(void (*cb)(void*));
 
 
 #endif
