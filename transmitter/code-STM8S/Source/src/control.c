@@ -1,3 +1,10 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:34:07
+ * @Description: file content
+ */
+
 
 #include "type_def.h"
 #include "24l01.h"
@@ -249,12 +256,7 @@ u8 Upload_data(void)
     {
         case TX_FRAME_1:
             AddToArray(&ptr, nrf_data_status, send_info.status);
-
-            if (send_info.direction == 0)
-                AddToArray(&ptr, nrf_data_throttle, send_info.throttle + 32768);
-            else
-                AddToArray(&ptr, nrf_data_throttle, send_info.throttle);
-
+            AddToArray(&ptr, nrf_data_throttle, send_info.throttle + 32768);
             AddToArray(&ptr, nrf_data_light1, send_info.light1);
             AddToArray(&ptr, nrf_data_light2, send_info.light2);
             fid = TX_FRAME_1;
@@ -276,7 +278,6 @@ u8 Upload_data(void)
 
     ptr = nrf_tx_buf;
     AddToArray(&ptr, nrf_data_crc, crc16(nrf_tx_buf + 2, sizeof(nrf_tx_buf) - 2)); //写入接收端校验码
-    //AddToArray(&ptr,nrf_data_crc,0x0006);    //写入遥控端校验码
     return 0;
 }
 

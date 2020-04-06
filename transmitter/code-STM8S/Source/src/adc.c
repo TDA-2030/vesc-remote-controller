@@ -1,38 +1,40 @@
-/******************** (C) COPYRIGHT  风驰iCreate嵌入式开发工作室 ***************************
- * 文件名  ：adc.c
- * 描述    ：AD配置函数库
- * 实验平台：iCreate STM8开发板
- * 寄存器版本  ：V2.0.0
- * 作者    ：ling_guansheng  QQ：779814207
- * 博客    ：
- * 修改时间 ：2012-6-16
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:33:44
+ * @Description: STM8S ADC 
+ */
 
- * iCreate STM8开发板硬件连接
-   STM8的PF0口(也就是ADC2的AIN10)接的是光敏或热敏电阻
-
-****************************************************************************************/
 
 #include "type_def.h"
 #include "adc.h"
 
 
+#define ADC_CH_BATT     (3)
+#define ADC_CH_VREF     (7)
+#define ADC_CH_THROTTLE (1)
+
+
+#define REFE_VOL (122.0f) //放大了100倍F
+
+enum
+{
+    FILTER_ID_BAT_VOL,
+    FILTER_ID_THROTTLE,
+    FILTER_ID_MAX,
+};
+
 #define ARRAY_LEN  12
-static uint16_t filter_array[ARRAY_LEN] = {0};
-static uint8_t filter_index = 0;
-
-#define REFE_VOL (122.0f) //放大了100倍
+static uint16_t filter_array[FILTER_ID_MAX][ARRAY_LEN] = {0};
+static uint8_t filter_index[FILTER_ID_MAX] = {0};
 
 
-/**************************************************************************
- * 函数名：ADC_conf
- * 描述  ：ADC模块初始化
- * 输入  ：无
+
+/**
+ * @brief adc initaliza
  *
- * 输出  ：无
- * 返回  ：无
- * 调用  ：外部调用
- *************************************************************************/
-void ADC_conf(void)
+ */
+void ADC_Init(void)
 {
     ADC_CR1 = (2 << 4) | (0 << 1) | (0 << 0); //ADC时钟输入频率为16MHz 这里设置分频系数为2  单次转换模式 先禁止ADC转换
     ADC_CR2 = (1 << 3) | (0 << 1);     //设置数据右对齐  禁止扫描模式
@@ -41,22 +43,16 @@ void ADC_conf(void)
 
     for (size_t i = 0; i < ARRAY_LEN; i++)
     {
-        filter_array[i] = 370;
+        filter_array[FILTER_ID_BAT_VOL][i] = BAT_VOL_LOW;
     }
 }
 
 
-
-/**************************************************************************
- * 函数名：ADC_GetConversionValue
- * 描述  ：获取ADC转换结果
- * 输入  ：无
+/**
+ * @brief get adc convert value
  *
- * 输出  ：无
- * 返回  ：无
- * 调用  ：内部调用
- *************************************************************************/
-uint16_t ADC_Get_Val(u8 channel)
+ */
+uint16_t ADC_Get_Val(uint8_t channel)
 {
     uint16_t value, temph;
     uint8_t templ;                  // 定义templ存储低8位数据  temph存储高8位数据
@@ -74,24 +70,54 @@ uint16_t ADC_Get_Val(u8 channel)
     return  value;
 }
 
+/**
+ * @brief get battery voltage (10mV)
+ *
+ */
 uint16_t ADC_Get_Voltage(void)
 {
     uint16_t sum = 0;
-    float temp = REFE_VOL * (float)ADC_Get_Val(BATT_CH);
-    uint16_t Vref = ADC_Get_Val(VREF_CH);
+    float temp = REFE_VOL * (float)ADC_Get_Val(ADC_CH_BATT);
+    uint16_t Vref = ADC_Get_Val(ADC_CH_VREF);
     temp = temp / Vref;
     temp = ((float)temp) * 5.228;
-    filter_array[filter_index++] = (uint16_t)temp;
+    filter_array[FILTER_ID_BAT_VOL][filter_index[FILTER_ID_BAT_VOL]++] = (uint16_t)temp;
 
-    if (filter_index == ARRAY_LEN)
+    if (filter_index[FILTER_ID_BAT_VOL] == ARRAY_LEN)
     {
-        filter_index = 0;
+        filter_index[FILTER_ID_BAT_VOL] = 0;
     }
 
     for (size_t i = 0; i < ARRAY_LEN; i++)
     {
-        sum += filter_array[i];
+        sum += filter_array[FILTER_ID_BAT_VOL][i];
     }
 
-    return sum / ARRAY_LEN; ///放大了100倍
+    return sum / ARRAY_LEN; // 放大了100倍
+}
+
+
+/**
+ * @brief get throttle value (0 ~ 1023)
+ *
+ */
+uint16_t ADC_Get_Throttle(void)
+{
+    uint16_t sum = 0;
+    const uint8_t len = 3;
+    filter_array[FILTER_ID_THROTTLE][filter_index[FILTER_ID_THROTTLE]++] =
+        // Due to the hardware design, it needs to be reversed
+        1023 - ADC_Get_Val(ADC_CH_THROTTLE);
+
+    if (filter_index[FILTER_ID_THROTTLE] == len)
+    {
+        filter_index[FILTER_ID_THROTTLE] = 0;
+    }
+
+    for (size_t i = 0; i < len; i++)
+    {
+        sum += filter_array[FILTER_ID_THROTTLE][i];
+    }
+
+    return sum / len; // 放大了100倍
 }

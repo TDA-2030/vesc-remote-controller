@@ -1,13 +1,9 @@
-
-/******************** (C) COPYRIGHT  奇来科技 *************************************
- * 文件名  ：delay_time.c
- * 描述    ：延时函数
- * 实验平台： STM8开发板
- * 库版本  ：V1.0.0
- * 技术支持：lijinnan@qiqirobot.com
- * 修改时间：2016-08-25
- * 淘宝网址：https://lsqrd.taobao.com/index.htm?spm=2013.1.w5002-7895914584.2.kYLHaf
-**********************************************************************************/
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:35:00
+ * @Description: delay function
+ */
 
 #include "type_def.h"
 #include "delay.h"

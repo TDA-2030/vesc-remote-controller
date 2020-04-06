@@ -7,7 +7,7 @@
 //#define LED_B     PC_ODR_ODR2
 //#define LED_LG    PC_ODR_ODR1
 
-/* LED函数定义 */
+/* LED  */
 void led_init(void);
 void led_set_rgb(uint8_t r, uint8_t g, uint8_t b);
 void led_set_hsv(uint16_t h, uint8_t s, uint8_t v);

@@ -1,11 +1,10 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:38:43
+ * @Description: file content
+ */
 
-/*********************************************************************************
- * 文件名  ：main.c
- * 描述    ：STM8S工程模板
- * 实验平台： STM8开发板
- * 库版本  ：V1.0.0
- * 时间：2016-08-25
-**********************************************************************************/
 
 /* Includes ------------------------------------------------------------------*/
 #include "type_def.h"
@@ -40,7 +39,7 @@ int main(void)
     setting_read();
     system.state = SYSTEM_STATE_NO_SIGNAL;
     control_Init();                                                        //--外部控制初始化
-    ADC_conf();                                                            //--ADC模块初始化 PB2,3端口
+    ADC_Init();                                                            //--ADC模块初始化 PB2,3端口
     NRF24L01_Base_Init();                                                  //-- 包含SPI初始化
     NRF24L01_Clear_IRQ_Flag(IRQ_ALL);
     InitTIM3(4, 1000 - 1);  //--系统ms计时
@@ -68,6 +67,8 @@ int main(void)
             time_200ms = Sys_Time + 200;
             system.bat_vol = ADC_Get_Voltage();
         }
+
+        
     }
 }
 

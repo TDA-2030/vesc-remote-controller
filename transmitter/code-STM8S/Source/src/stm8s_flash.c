@@ -1,16 +1,10 @@
-/******************** (C) COPYRIGHT  风驰iCreate嵌入式开发工作室 ***************************
- * 文件名  ：adc.c
- * 描述    ：AD配置函数库   
- * 实验平台：iCreate STM8开发板
- * 寄存器版本  ：V2.0.0
- * 作者    ：ling_guansheng  QQ：779814207
- * 博客    ：
- * 修改时间 ：2012-6-16
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:39:11
+ * @Description: file content
+ */
 
- * iCreate STM8开发板硬件连接
-   STM8的PF0口(也就是ADC2的AIN10)接的是光敏或热敏电阻
-
-****************************************************************************************/
 
 #include "type_def.h"
 #include "stm8s_flash.h"

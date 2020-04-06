@@ -2,8 +2,8 @@
 #define __CONTROL_H
 
   
-#define LED_CHRG   PA_IDR_IDR2 //
-#define LED_STDBY  PA_IDR_IDR1 //   
+#define TP4056_CHRG   PA_IDR_IDR2 //
+#define TP4056_STDBY  PA_IDR_IDR1 //   
 
 
 

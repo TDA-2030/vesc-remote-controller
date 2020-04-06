@@ -1,3 +1,9 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-04-06 23:38:49
+ * @Description: file content
+ */
 
 
 #include "type_def.h"
@@ -22,6 +28,7 @@ static void page_lowpower(void);
 static void page_main(void);
 static void page_setting(void);
 static void page_para(void);
+static void cb_page_exec(void *arg);
 
 static uint32_t g_page_time = 0;
 
@@ -30,9 +37,6 @@ void menu_init(void)
     win_init();
     win_set(page_boot);
 }
-
-
-
 
 void page_boot(void)
 {
@@ -47,7 +51,7 @@ void page_boot(void)
         {
             static uint8_t green = 0;
 
-            if ((LED_STDBY == 0) || (LED_CHRG == 0))
+            if ((TP4056_STDBY == 0) || (TP4056_CHRG == 0))
             {
                 win_set(page_charge);
             }
@@ -58,15 +62,14 @@ void page_boot(void)
                 led_set_rgb(200, 200, 200);
                 OLED_DrawBMP(0, 0, 127, 63, BMP1); //图片显示
                 delay_ms(700);
-                led_set_rgb(0, 0, 0);
                 win_set(page_connect);
             }
 
             if (PRESS_DOWN == get_button_event(&btn_1))
             {
-                delay_ms(12);
+                delay_ms(10);
 
-                if (green < 200)
+                if (green < 250)
                 {
                     green++;
                 }
@@ -127,6 +130,7 @@ void page_connect(void)
     {
         case WIN_STATE_INIT:
             OLED_Clear();
+            led_set_rgb(0, 0, 0);
 
             while (NRF24L01_Check())
             {
@@ -193,7 +197,7 @@ void page_charge(void)
             LCD_DrawRectangle(89, 19, 90, 31);
             button_attach(&btn_1, SINGLE_CLICK, cb_charge_single);
             system.bat_vol = ADC_Get_Voltage();
-            bat_val = system.bat_vol - 370;
+            bat_val = system.bat_vol - BAT_VOL_LOW;
             val_index = bat_val;
             break;
 
@@ -206,9 +210,9 @@ void page_charge(void)
             if (Sys_Time > g_page_time)
             {
                 g_page_time = Sys_Time + 200;
-                bat_val = system.bat_vol - 370;
+                bat_val = system.bat_vol - BAT_VOL_LOW;
 
-                if ((LED_CHRG == 0))
+                if ((TP4056_CHRG == 0))
                 {
                     val_index += 1;
 
@@ -217,7 +221,7 @@ void page_charge(void)
                         val_index = bat_val;
                     }
                 }
-                else if ((LED_STDBY == 0))
+                else if ((TP4056_STDBY == 0))
                 {
                     val_index = bat_val;
                 }
@@ -234,20 +238,28 @@ void page_charge(void)
             if (Sys_Time > led_time)
             {
                 led_time = Sys_Time + 25;
-                led_set_hsv(bat_val << 1, 100, led_v);
 
-                if (led_dir)
+                if ((TP4056_STDBY == 0))
                 {
-                    if (led_v-- < 2)
-                    {
-                        led_dir = 0;
-                    }
+                    led_set_hsv(120, 100, 60);
                 }
                 else
                 {
-                    if (led_v++ > 80)
+                    led_set_hsv(bat_val << 1, 100, led_v);
+
+                    if (led_dir)
                     {
-                        led_dir = 1;
+                        if (led_v-- < 2)
+                        {
+                            led_dir = 0;
+                        }
+                    }
+                    else
+                    {
+                        if (led_v++ > 80)
+                        {
+                            led_dir = 1;
+                        }
                     }
                 }
             }
@@ -326,6 +338,7 @@ void page_main(void)
             button_attach(&btn_2, LONG_RRESS_START, cb_main_long);
             button_attach(&btn_2, SINGLE_CLICK, cb_main_single);
             win_set_flash_time(60);
+            win_set_exec_callback(cb_page_exec);
             break;
 
         case WIN_STATE_EXEC:
@@ -358,8 +371,8 @@ void page_main(void)
 
             OLED_ShowNum(40, 15, skate_info.speed / 221, 2, 24);
             OLED_ShowNum(42, 39, send_info.throttle, 4, 8);
-            OLED_Showfloat(33, 8, 365, 'V', 3, 1, 8);
-            OLED_Showfloat(63, 8, 2345, 'A', 4, 1, 8);
+            OLED_Showfloat(33, 8, skate_info.voltage, 'V', 3, 1, 8);
+            OLED_Showfloat(63, 8, skate_info.mot_current, 'A', 4, 1, 8);
             OLED_ShowNum(103, 0, Sys_Tx_Rate, 3, 12);
             OLED_ShowNum(0, 51, skate_info.tacho_single, 5, 12);
 
@@ -367,10 +380,10 @@ void page_main(void)
             {
                 static uint8_t val_index;
                 uint8_t bat_val;
-                g_page_time = Sys_Time + 300;
-                bat_val = system.bat_vol - 370;
+                g_page_time = Sys_Time + 200;
+                bat_val = system.bat_vol - BAT_VOL_LOW;
 
-                if ((LED_CHRG == 0))
+                if ((TP4056_CHRG == 0))
                 {
                     val_index += 1;
 
@@ -742,3 +755,31 @@ void page_lowpower(void)
 //             break;
 //     }
 // }
+
+void cb_page_exec(void *arg)
+{
+    static uint32_t time_20ms = 0;
+
+    if (Sys_Time > time_20ms)
+    {
+        time_20ms = Sys_Time + 20;
+        send_info.throttle = ADC_Get_Throttle();
+        int16_t v = send_info.throttle - 512;
+
+        if (v > 0)
+        {
+            led_set_rgb(v >> 1, 0, 0);
+        }
+        else
+        {
+            v = -v;
+
+            if (v > 511)
+            {
+                v = 511;
+            }
+
+            led_set_rgb(0, v >> 1, 0);
+        }
+    }
+}
