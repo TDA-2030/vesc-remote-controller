@@ -2,7 +2,7 @@
 #define _MAIN_H__
 
 #define SETTING_FLASH_ADDR (0)
-#define FLASH_CHECK (0x1278)   //¼ìÑéÖµ
+#define FLASH_CHECK (0x1278)   //æ£€éªŒå€¼
 
 #define MAJOR_VERSION 2
 #define MINOR_VERSION 1
@@ -10,32 +10,34 @@
 
 typedef struct
 {
-	uint16_t check;
-	
-        
-        uint8_t light_en;
-	uint8_t light1;
-	uint8_t light2;
-	
-        uint16_t auto_off_time;
-	
-}Setting_TypeDef;
+    uint16_t check;
+
+
+    uint8_t light_en;
+    uint8_t light1;
+    uint8_t light2;
+
+    uint16_t auto_off_time;
+
+} Setting_TypeDef;
 extern Setting_TypeDef setting;
 
 
 typedef struct
 {
-	volatile uint8_t state;
-        uint16_t auto_off_timer;
+    volatile uint8_t state;
+    uint16_t auto_off_timer;
+	uint16_t bat_vol;
 
-}System_TypeDef;
+} System_TypeDef;
 extern System_TypeDef system;
 
-enum{
-	SYSTEM_STATE_IDLE,     //ÒÑÁ¬½Ó£¬Î´¿ª»ú
-	SYSTEM_STATE_RUNNING,  //ÔËĞĞÖĞ
-	SYSTEM_STATE_CHARGING, //³äµçÖĞ
-	SYSTEM_STATE_NO_SIGNAL,//ĞÅºÅ¶ªÊ§
+enum
+{
+    SYSTEM_STATE_IDLE,     //å·²è¿æ¥ï¼Œæœªå¼€æœº
+    SYSTEM_STATE_RUNNING,  //è¿è¡Œä¸­
+    SYSTEM_STATE_CHARGING, //å……ç”µä¸­
+    SYSTEM_STATE_NO_SIGNAL,//ä¿¡å·ä¸¢å¤±
 };
 
 extern uint32_t Sys_Time;

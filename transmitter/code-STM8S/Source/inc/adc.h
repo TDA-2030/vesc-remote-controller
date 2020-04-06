@@ -2,11 +2,11 @@
 #define __ADC_H
 
 
-#define BATT_CH   3
-#define VREF_CH   7
+#define BAT_VOL_LOW (370)
 
-void ADC_conf(void);
-u16 ADC_Get_Val(u8 channel);
-u16 ADC_Get_Voltage(void);
+void ADC_Init(void);
+uint16_t ADC_Get_Val(uint8_t channel);
+uint16_t ADC_Get_Voltage(void);
+uint16_t ADC_Get_Throttle(void);
 
 #endif

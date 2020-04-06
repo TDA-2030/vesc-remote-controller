@@ -66,20 +66,20 @@
         <option>
           <name>GenLibInFormatter</name>
           <version>0</version>
-          <state>5</state>
+          <state>6</state>
         </option>
         <option>
           <name>GenLibInFormatterDescription</name>
-          <state>No specifier n, no float, no scan set, no assignment suppressing.</state>
+          <state>No specifier n, no float, no scan set, no assignment suppressing, without multibytes.</state>
         </option>
         <option>
           <name>GenLibOutFormatter</name>
           <version>0</version>
-          <state>7</state>
+          <state>6</state>
         </option>
         <option>
           <name>GenLibOutFormatterDescription</name>
-          <state>No specifier a or A, no specifier n, no float, no flags.</state>
+          <state>No specifier a or A, no specifier n, no float, without multibytes</state>
         </option>
         <option>
           <name>GenStackSize</name>
@@ -607,7 +607,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$TOOLKIT_DIR$\config\lnkstm8s105k4.icf</state>
+          <state>$TOOLKIT_DIR$\config\lnkstm8s105k6.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -667,7 +667,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabelSelect</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
@@ -1600,16 +1600,19 @@
       <name>$PROJ_DIR$\..\Source\src\exti.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Source\src\font.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Source\src\key.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\src\led.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\src\oled.c</name>
+      <name>$PROJ_DIR$\..\Source\src\multi_button.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\src\pwm.c</name>
+      <name>$PROJ_DIR$\..\Source\src\oled.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\src\stm8s_flash.c</name>
@@ -1636,10 +1639,13 @@
       <name>$PROJ_DIR$\..\Source\src\crc.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\USR\main.c</name>
+      <name>$PROJ_DIR$\..\Source\src\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\src\menu.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\windows.c</name>
     </file>
   </group>
 </project>
