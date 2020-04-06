@@ -1,9 +1,4 @@
-<!--
- * @Author: zhouli
- * @Date: 2020-04-04 15:26:37
- * @LastEditTime: 2020-04-06 23:45:59
- * @Description: file content
- -->
+
 # VESC Remote Controller
 
 This remote controller is used to control the VESC motor controller. It can easily control the electric skateboard equipped with VESC drive.
