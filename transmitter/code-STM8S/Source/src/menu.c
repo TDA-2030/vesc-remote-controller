@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-04-06 23:38:49
+ * @LastEditTime: 2020-04-09 00:27:09
  * @Description: file content
  */
 
@@ -509,19 +509,22 @@ static void cb_setting_single(void *arg)
     if (&btn_1 == btn &&
         (select > 0))
     {
-        select--;
     }
-    else if (&btn_2 == btn &&
-             (select < (SET_INDEX_MAX - 1)))
+    else if (&btn_2 == btn)
     {
         select++;
+
+        if (SET_INDEX_MAX == select)
+        {
+            select = 0;
+        }
     }
 }
 void page_setting(void)
 {
     static uint8_t bak = 0;
     static uint8_t start = 0;
-    static const uint8_t LINES = 4;
+    static const uint8_t LINES = 3;
     uint8_t end;
     uint8_t index;
 
@@ -530,6 +533,8 @@ void page_setting(void)
         case WIN_STATE_INIT:
             OLED_Clear();
             OLED_ShowString(0, 0, "setings", 16);
+            OLED_ShowChar(0, 32, '>', 16);
+            OLED_ShowChar(120, 32, '<', 16);
             send_info.year = skate_info.year;
             send_info.month = skate_info.month;
             send_info.day = skate_info.day;
@@ -539,20 +544,28 @@ void page_setting(void)
             button_attach(&btn_2, LONG_RRESS_START, cb_setting_long);
             button_attach(&btn_1, PRESS_UP, cb_setting_single);
             button_attach(&btn_2, PRESS_UP, cb_setting_single);
-            win_set_flash_time(33);
+            win_set_flash_time(35);
 
-            for (uint8_t i = 0; i < LINES; i++)
+            if (0 == select)
             {
-                if (i == select)
-                {
-                    OLED_ShowModeSet(0);
-                    OLED_ShowString(2, (i * 12) + 16, options[index], 12);
-                    OLED_ShowModeSet(1);
-                }
-                else
-                {
-                    OLED_ShowString(2, (i * 12) + 16, options[i], 12);
-                }
+                OLED_ShowString(8, 18, options[SET_INDEX_MAX - 1], 12);
+            }
+            else
+            {
+                OLED_ShowString(8, 18, options[select - 1], 12);
+            }
+
+            OLED_ShowModeSet(0);
+            OLED_ShowString(8, 32, options[select], 16);
+            OLED_ShowModeSet(1);
+
+            if ((SET_INDEX_MAX - 1) == select)
+            {
+                OLED_ShowString(8, 50, options[0], 12);
+            }
+            else
+            {
+                OLED_ShowString(8, 50, options[select + 1], 12);
             }
 
             break;
@@ -562,33 +575,24 @@ void page_setting(void)
             if (bak != select)
             {
                 bak = select;
-                end = start + LINES;
-
-                if (select >= end)
+                if (0 == select)
                 {
-                    start++;
+                    OLED_ShowString(8, 18, options[SET_INDEX_MAX - 1], 12);
                 }
-                else if (select < start)
+                else
                 {
-                    start--;
+                    OLED_ShowString(8, 18, options[select - 1], 12);
                 }
-
-                end = start + LINES;
-
-                for (uint8_t i = 0; i < LINES; i++)
+                // OLED_ShowModeSet(0);
+                OLED_ShowString(8, 32, options[select], 16);
+                // OLED_ShowModeSet(1);
+                if ((SET_INDEX_MAX - 1) == select)
                 {
-                    index = i + start;
-
-                    if (index == select)
-                    {
-                        OLED_ShowModeSet(0);
-                        OLED_ShowString(2, (i * 12) + 16, options[index], 12);
-                        OLED_ShowModeSet(1);
-                    }
-                    else
-                    {
-                        OLED_ShowString(2, (i * 12) + 16, options[index], 12);
-                    }
+                    OLED_ShowString(8, 50, options[0], 12);
+                }
+                else
+                {
+                    OLED_ShowString(8, 50, options[select + 1], 12);
                 }
             }
         }
