@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-06 23:44:53
- * @LastEditTime: 2020-04-09 00:25:49
+ * @LastEditTime: 2020-04-11 16:37:25
  * @Description: file content
  */
 #ifndef __OLEDFONT_H
@@ -19,7 +19,8 @@ extern const unsigned char icon_arrow_up[];
 extern const unsigned char icon_arrow_down[];
 extern const unsigned char icon_clock[];
 extern const unsigned char icon_setting[];
-extern const unsigned char icon_light[];
-
+extern const unsigned char icon_light_s[];
+extern const unsigned char icon_light_d[];
+extern const unsigned char icon_low_power[];
 
 #endif

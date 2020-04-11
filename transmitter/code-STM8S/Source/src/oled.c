@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-04-06 23:39:05
+ * @LastEditTime: 2020-04-11 16:17:45
  * @Description: file content
  */
 
@@ -279,7 +279,7 @@ void OLED_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len
 
     if (uint != 0)
     {
-        OLED_ShowChar(x+width, y, uint, size);
+        OLED_ShowChar(x + width, y, uint, size);
     }
 
     for (size_t i = 0; i < len; i++)
@@ -340,21 +340,65 @@ void OLED_Set_Pos(uint8_t x, uint8_t y)
     OLED_WR_Byte((x & 0x0f), OLED_CMD);
 }
 /***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y的范围0～63*****************/
+// void OLED_DrawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t BMP[])
+// {
+//     uint8_t x, y;
+//     uint8_t temp, yy;
+//     y1++;
+//     x1++;
+
+//     for (y = y0; y < y1; y+=8)
+//     {
+//         temp = y % 8;
+//         yy = y / 8;
+//         uint8_t mask_l = ;
+//         uint8_t mask_h;
+
+//         if (temp)  // 不是8的倍数，需要拼接位数
+//         {
+//             uint8_t d, h, l;
+
+//             for (x = x0; x < x1; x++)
+//             {
+//                 d = *BMP++;
+//                 h = OLED_GRAM[x][yy];
+//                 l = OLED_GRAM[x][yy+1];
+//                 OLED_GRAM[x][yy] = ;
+//                 OLED_GRAM[x][yy] = ;
+//             }
+//         }
+//         else
+//         {
+//             for (x = x0; x < x1; x++)
+//                 OLED_GRAM[x][y] = *BMP++;
+//         }
+//     }
+
+//     OLED_Refresh_Gram();//更新显示
+// }
+
+/***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y的范围0～63*****************/
 void OLED_DrawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t BMP[])
 {
-    unsigned char x, y;
-    y1++;
-    x1++;
-
-    if (y0 % 8 || y1 % 8) return;
-
-    y0 /= 8;
-    y1 /= 8;
-
-    for (y = y0; y < y1; y++)
+    uint8_t x, y;
+    uint8_t lx,ly;
+    lx=x1-x0+1;
+    ly=y1-y0+1;
+    for (y = 0; y < ly; y++)
     {
-        for (x = x0; x < x1; x++)
-            OLED_GRAM[x][y] = *BMP++;
+        for (x = 0; x < lx; x++)
+        {
+            uint8_t bit = BMP[((y) / 8) * ((x1 - x0 + 1)) + (x)];
+
+            if (bit & (1 << (7-(y % 8))))
+            {
+                OLED_DrawPoint(x+x0, y+y0, g_show_mode); //画点
+            }
+            else
+            {
+                OLED_DrawPoint(x+x0, y+y0, !g_show_mode); //画点
+            }
+        }
     }
 
     OLED_Refresh_Gram();//更新显示

@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-04-09 00:27:09
+ * @LastEditTime: 2020-04-11 22:51:13
  * @Description: file content
  */
 
@@ -37,6 +37,37 @@ void menu_init(void)
     win_init();
     win_set(page_boot);
 }
+
+
+void cb_page_exec(void *arg)
+{
+    static uint32_t time_20ms = 0;
+
+    if (Sys_Time > time_20ms)
+    {
+        time_20ms = Sys_Time + 20;
+        send_info.throttle = ADC_Get_Throttle();
+        int16_t v = send_info.throttle - 512;
+
+        if (v > 0)
+        {
+            led_set_rgb(v >> 1, 0, 0);
+        }
+        else
+        {
+            v = -v;
+
+            if (v > 511)
+            {
+                v = 511;
+            }
+
+            led_set_rgb(0, v >> 1, 0);
+        }
+    }
+}
+
+
 
 void page_boot(void)
 {
@@ -469,29 +500,145 @@ void page_para(void)
 }
 
 
-typedef enum
+void page_lowpower(void)
 {
-    SET_LIGHT,
-    SET_OFF_TIME,
-    SET_YEAR,
-    SET_MONTH,
-    SET_DAY,
-    SET_HOUR,
-    SET_MIN,
-    SET_SEC,
-    SET_INDEX_MAX,
-} SET_INDEX;
-static const unsigned char options[SET_INDEX_MAX][9] =
+    switch (win_get_state())
+    {
+        case WIN_STATE_INIT:
+            OLED_Clear();
+            OLED_DrawBMP(38, 16, 89, 63, icon_low_power);
+            break;
+
+        case WIN_STATE_EXEC:
+        {
+        }
+        break;
+
+        case WIN_STATE_EXIT:
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+/**
+ * setting pages
+ *
+ */
+
+
+static uint8_t select = 0;
+static uint8_t ok = 0;
+
+typedef struct
 {
-    "light   ",
-    "off_time",
-    "year    ",
-    "month   ",
-    "day     ",
-    "hour    ",
-    "minute  ",
-    "seconds ",
+    win_fun_t page_fun;
+    char *name;
+
+} option_t;
+
+
+void page_set_time(void);
+void page_set_light(void);
+void page_set_sys(void);
+
+#define OPTIONS_MAX 3
+option_t options[OPTIONS_MAX] =
+{
+    {page_set_time,  "set time"},
+    {page_set_light, "set light"},
+    {page_set_sys,   "set system"},
 };
+
+void page_set_time(void)
+{
+    switch (win_get_state())
+    {
+        case WIN_STATE_INIT:
+            OLED_Clear();
+            send_info.year = skate_info.year;
+            send_info.month = skate_info.month;
+            send_info.day = skate_info.day;
+            send_info.hour = skate_info.hour;
+            send_info.min = skate_info.min;
+            send_info.sec = skate_info.sec;
+            OLED_ShowString(24, 16, "    -  -  ", 16);
+            OLED_ShowNum(24, 16, 2000 + send_info.year, 4, 16);
+            OLED_ShowNum(64, 16, send_info.month, 2, 16);
+            OLED_ShowNum(88, 16, send_info.day, 2, 16);
+            OLED_ShowString(32, 16, "  -  -  ", 16);
+            OLED_ShowNum(32, 16, send_info.hour, 2, 16);
+            OLED_ShowNum(56, 16, send_info.min, 2, 16);
+            OLED_ShowNum(80, 16, send_info.sec, 2, 16);
+            select = 0;
+            break;
+
+        case WIN_STATE_EXEC:
+        {
+            OLED_ShowNum(24, 16, 2000 + 20, 4, 16);
+        }
+        break;
+
+        case WIN_STATE_EXIT:
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+
+
+void page_set_light(void)
+{
+    switch (win_get_state())
+    {
+        case WIN_STATE_INIT:
+            OLED_Clear();
+            OLED_ShowString(0, 0, options[select].name, 16);
+            break;
+
+        case WIN_STATE_EXEC:
+        {
+        }
+        break;
+
+        case WIN_STATE_EXIT:
+            break;
+
+        default:
+            break;
+    }
+}
+
+void page_set_sys(void)
+{
+    switch (win_get_state())
+    {
+        case WIN_STATE_INIT:
+            OLED_Clear();
+            OLED_ShowString(0, 0, options[select].name, 16);
+            break;
+
+        case WIN_STATE_EXEC:
+        {
+        }
+        break;
+
+        case WIN_STATE_EXIT:
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+
+
 static void cb_setting_long(void *arg)
 {
     struct Button *btn = (Button *)arg;
@@ -501,40 +648,55 @@ static void cb_setting_long(void *arg)
         win_set(page_main);
     }
 }
-static uint8_t select = 0;
+
 static void cb_setting_single(void *arg)
 {
     struct Button *btn = (Button *)arg;
 
-    if (&btn_1 == btn &&
-        (select > 0))
+    if (&btn_1 == btn)
     {
+        ok = 1;
     }
     else if (&btn_2 == btn)
     {
         select++;
 
-        if (SET_INDEX_MAX == select)
+        if (OPTIONS_MAX == select)
         {
             select = 0;
         }
     }
 }
+
+/**
+ * @brief: --     --
+ *         |        |
+ *
+ *         |        |
+ *         --      --
+ * @param {type}
+ * @return:
+ */
+void select_icon(uint16_t x0, uint16_t y0, uint16_t xx, uint16_t yy)
+{
+    LCD_DrawLine(x0, y0, x0 + 5, y0);
+    LCD_DrawLine(x0, y0, x0, y0 + 5);
+    LCD_DrawLine(x0 + xx, y0, x0 + xx - 5, y0);
+    LCD_DrawLine(x0 + xx, y0, x0 + xx, y0 + 5);
+    LCD_DrawLine(x0 + xx, y0 + yy, x0 + xx - 5, y0 + yy);
+    LCD_DrawLine(x0 + xx, y0 + yy, x0 + xx, y0 + yy - 5);
+    LCD_DrawLine(x0, y0 + yy, x0 + 5, y0 + yy);
+    LCD_DrawLine(x0, y0 + yy, x0, y0 + yy - 5);
+}
 void page_setting(void)
 {
     static uint8_t bak = 0;
-    static uint8_t start = 0;
-    static const uint8_t LINES = 3;
-    uint8_t end;
-    uint8_t index;
 
     switch (win_get_state())
     {
         case WIN_STATE_INIT:
             OLED_Clear();
             OLED_ShowString(0, 0, "setings", 16);
-            OLED_ShowChar(0, 32, '>', 16);
-            OLED_ShowChar(120, 32, '<', 16);
             send_info.year = skate_info.year;
             send_info.month = skate_info.month;
             send_info.day = skate_info.day;
@@ -542,32 +704,13 @@ void page_setting(void)
             send_info.min = skate_info.min;
             send_info.sec = skate_info.sec;
             button_attach(&btn_2, LONG_RRESS_START, cb_setting_long);
-            button_attach(&btn_1, PRESS_UP, cb_setting_single);
-            button_attach(&btn_2, PRESS_UP, cb_setting_single);
-            win_set_flash_time(35);
-
-            if (0 == select)
-            {
-                OLED_ShowString(8, 18, options[SET_INDEX_MAX - 1], 12);
-            }
-            else
-            {
-                OLED_ShowString(8, 18, options[select - 1], 12);
-            }
-
-            OLED_ShowModeSet(0);
-            OLED_ShowString(8, 32, options[select], 16);
-            OLED_ShowModeSet(1);
-
-            if ((SET_INDEX_MAX - 1) == select)
-            {
-                OLED_ShowString(8, 50, options[0], 12);
-            }
-            else
-            {
-                OLED_ShowString(8, 50, options[select + 1], 12);
-            }
-
+            button_attach(&btn_1, PRESS_DOWN, cb_setting_single);
+            button_attach(&btn_2, PRESS_DOWN, cb_setting_single);
+            win_set_flash_time(50);
+            OLED_DrawBMP(18, 20, 41, 43, icon_setting);
+            OLED_DrawBMP(51, 20, 74, 43, icon_light_d);
+            OLED_DrawBMP(84, 20, 107, 43, icon_clock);
+            select = 0;
             break;
 
         case WIN_STATE_EXEC:
@@ -575,215 +718,41 @@ void page_setting(void)
             if (bak != select)
             {
                 bak = select;
-                if (0 == select)
+                OLED_ShowString(0, 0, options[select].name, 16);
+                OLED_ShowModeSet(0);
+
+                if (select == 0)
                 {
-                    OLED_ShowString(8, 18, options[SET_INDEX_MAX - 1], 12);
+                    select_icon(17 + 33 * 2, 19, 26, 26);
                 }
                 else
                 {
-                    OLED_ShowString(8, 18, options[select - 1], 12);
+                    select_icon(17 + 33 * (select - 1), 19, 26, 26);
                 }
-                // OLED_ShowModeSet(0);
-                OLED_ShowString(8, 32, options[select], 16);
-                // OLED_ShowModeSet(1);
-                if ((SET_INDEX_MAX - 1) == select)
-                {
-                    OLED_ShowString(8, 50, options[0], 12);
-                }
-                else
-                {
-                    OLED_ShowString(8, 50, options[select + 1], 12);
-                }
+
+                OLED_ShowModeSet(1);
+                select_icon(17 + 33 * select, 19, 26, 26);
             }
-        }
-        break;
 
-        case WIN_STATE_EXIT:
-            button_attach(&btn_2, LONG_RRESS_START, NULL);
-            break;
-
-        default:
-            break;
-    }
-}
-
-void page_lowpower(void)
-{
-    switch (win_get_state())
-    {
-        case WIN_STATE_INIT:
-            OLED_Clear();
-            break;
-
-        case WIN_STATE_EXEC:
-        {
-        }
-        break;
-
-        case WIN_STATE_EXIT:
-            break;
-
-        default:
-            break;
-    }
-}
-
-
-
-
-// void setting_page_dis_param(uint8_t y, uint8_t index)
-// {
-//     uint8_t x = 80;
-
-//     switch (index)
-//     {
-//         case 0:
-//             OLED_ShowNum_n(x, y, send_info.status, 5, 12, 1);
-//             break;
-
-//         case 1:
-//             OLED_ShowNum_n(x, y, setting.light1, 5, 12, 1);
-//             break;
-
-//         case 2:
-//             OLED_ShowNum_n(x, y, setting.light2, 5, 12, 1);
-//             break;
-
-//         case 3:
-//             OLED_ShowNum_n(x, y, send_info.direction, 5, 12, 1);
-//             break;
-
-//         case 4:
-//             OLED_ShowNum_n(x, y, setting.auto_off_time, 5, 12, 1);
-//             break;
-
-//         case 5:
-//             OLED_ShowNum_n(x, y, send_info.year, 5, 12, 1);
-//             break;
-
-//         case 6:
-//             OLED_ShowNum_n(x, y, send_info.month, 5, 12, 1);
-//             break;
-
-//         case 7:
-//             OLED_ShowNum_n(x, y, send_info.day, 5, 12, 1);
-//             break;
-
-//         case 8:
-//             OLED_ShowNum_n(x, y, send_info.hour, 5, 12, 1);
-//             break;
-
-//         case 9:
-//             OLED_ShowNum_n(x, y, send_info.min, 5, 12, 1);
-//             break;
-
-//         case 10:
-//             OLED_ShowNum_n(x, y, send_info.sec, 5, 12, 1);
-//             break;
-
-//         case 11:
-//             break;
-
-//         default:
-//             break;
-//     }
-// }
-
-// void setting_page_edit_param(uint8_t y, uint8_t index)
-// {
-//     uint8_t x = 80;
-//     uint16_t v = 1023 - ADC_Get_Val(1);
-
-//     switch (index)
-//     {
-//         case 0:
-//             send_info.status = v > 512 ? 1 : 0;
-//             OLED_ShowNum_n(x, y, send_info.status, 5, 12, 0);
-//             break;
-
-//         case 1:
-//             setting.light1 = v / 10;
-//             OLED_ShowNum_n(x, y, setting.light1, 5, 12, 0);
-//             break;
-
-//         case 2:
-//             setting.light2 = v / 10;
-//             OLED_ShowNum_n(x, y, setting.light2, 5, 12, 0);
-//             break;
-
-//         case 3:
-//             send_info.direction = v > 512 ? 0 : 1;
-//             OLED_ShowNum_n(x, y, send_info.direction, 5, 12, 0);
-//             break;
-
-//         case 4:
-//             setting.auto_off_time = (v + 5) * 60;
-//             system.auto_off_timer = 0;
-//             OLED_ShowNum_n(x, y, setting.auto_off_time, 5, 12, 0);
-//             break;
-
-//         case 5:
-//             send_info.year = v / 10;
-//             OLED_ShowNum_n(x, y, send_info.year, 5, 12, 0);
-//             break;
-
-//         case 6:
-//             send_info.month = v / 85;
-//             OLED_ShowNum_n(x, y, send_info.month, 5, 12, 0);
-//             break;
-
-//         case 7:
-//             send_info.day = v / 33;
-//             OLED_ShowNum_n(x, y, send_info.day, 5, 12, 0);
-//             break;
-
-//         case 8:
-//             send_info.hour = v / 44;
-//             OLED_ShowNum_n(x, y, send_info.hour, 5, 12, 0);
-//             break;
-
-//         case 9:
-//             send_info.min = v / 17;
-//             OLED_ShowNum_n(x, y, send_info.min, 5, 12, 0);
-//             break;
-
-//         case 10:
-//             send_info.sec = v / 17;
-//             OLED_ShowNum_n(x, y, send_info.sec, 5, 12, 0);
-//             break;
-
-//         case 11:
-//             break;
-
-//         default:
-//             break;
-//     }
-// }
-
-void cb_page_exec(void *arg)
-{
-    static uint32_t time_20ms = 0;
-
-    if (Sys_Time > time_20ms)
-    {
-        time_20ms = Sys_Time + 20;
-        send_info.throttle = ADC_Get_Throttle();
-        int16_t v = send_info.throttle - 512;
-
-        if (v > 0)
-        {
-            led_set_rgb(v >> 1, 0, 0);
-        }
-        else
-        {
-            v = -v;
-
-            if (v > 511)
+            if (ok)
             {
-                v = 511;
+                ok = 0;
+                win_set(options[select].page_fun);
             }
-
-            led_set_rgb(0, v >> 1, 0);
         }
+        break;
+
+        case WIN_STATE_EXIT:
+            button_attach(&btn_1, PRESS_DOWN, NULL);
+            button_attach(&btn_2, PRESS_DOWN, NULL);
+            break;
+
+        default:
+            break;
     }
 }
+
+
+
+
+
