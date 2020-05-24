@@ -1,3 +1,9 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-05-26 00:29:08
+ * @Description: file content
+ */
 
 
 
@@ -6,6 +12,9 @@
 
 #include "font.h"
 #include "type_def.h"
+#include "gui_basic.h"
+#include "gui_bitmap.h"
+#include "gui_char.h"
 
 #define OLED_CMD  0	//写命令
 #define OLED_DATA 1	//写数据
@@ -53,23 +62,17 @@
 
 
 //OLED控制用函数
+void OLED_Init(void);
 void OLED_WR_Byte(uint8_t dat, uint8_t cmd);
-void OLED_ShowModeSet(uint8_t mode);
+void OLED_SetPointColor(uint8_t color);
+void OLED_GetPointColor(uint8_t **out_p);
 void OLED_Display_On(void);
 void OLED_Display_Off(void);
 void OLED_Refresh_Gram(void);
-void OLED_Init(void);
 void OLED_Clear(void);
 void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t t);
-void OLED_Fill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t dot);
-void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size);
-void OLED_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size);
-void OLED_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len, uint8_t point, uint8_t size);
-void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *p, uint8_t size);
-void OLED_DrawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t BMP[]);
-void LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-void LCD_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
-void LCD_Draw_Circle(uint16_t x0, uint16_t y0, uint8_t r);
+void OLED_DrawPointFast(uint8_t x, uint8_t y);
+
 #endif
 
 

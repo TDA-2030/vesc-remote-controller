@@ -373,8 +373,8 @@ ARM Macro Assembler    Page 6
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M0+ --apcs=inter
 work --depend=l051k8u6_cubemx\startup_stm32l051xx.d -ol051k8u6_cubemx\startup_s
-tm32l051xx.o -I.\RTE\_L051K8U6_cubemx -IE:\MySoftware\Keil_v5\ARM\CMSIS\5.6.0\C
-MSIS\Core\Include -IE:\MySoftware\Keil_v5\Keil\STM32L0xx_DFP\2.0.1\Drivers\CMSI
+tm32l051xx.o -I.\RTE\_L051K8U6_cubemx -ID:\MySoftware\keil_v5\ARM\CMSIS\5.6.0\C
+MSIS\Core\Include -ID:\MySoftware\keil_v5\Keil\STM32L0xx_DFP\2.0.1\Drivers\CMSI
 S\Device\ST\STM32L0xx\Include --predefine="__MICROLIB SETA 1" --predefine="__UV
 ISION_VERSION SETA 529" --predefine="_RTE_ SETA 1" --predefine="STM32L051xx SET
 A 1" --list=startup_stm32l051xx.lst startup_stm32l051xx.s
