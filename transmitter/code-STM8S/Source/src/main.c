@@ -16,7 +16,7 @@
 #include "control.h"
 #include "timer.h"
 #include "key.h"
-#include "windows.h"
+#include "gui_windows.h"
 #include "main.h"
 #include "stm8s_flash.h"
 #include "menu.h"

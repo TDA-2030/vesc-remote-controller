@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-05-26 01:25:24
+ * @LastEditTime: 2020-05-27 03:03:35
  * @Description: file content
  */
 
@@ -17,9 +17,10 @@
 #include "main.h"
 #include "timer.h"
 #include "key.h"
-#include "windows.h"
+#include "gui_windows.h"
 #include "stdio.h"
 #include "m_settings.h"
+#include "math.h"
 
 static void page_boot(void);
 static void page_shutdown(void);
@@ -262,6 +263,7 @@ void page_charge(void)
                 {
                     val_index = 48;
                 }
+
                 GUI_SetPointColor(1);
                 GUI_Fill(39, 18, 39 + val_index, 32);
                 GUI_SetPointColor(0);
@@ -351,6 +353,7 @@ static void cb_main_single(void *arg)
         win_set(page_para);
     }
 }
+#if 0
 void page_main(void)
 {
     switch (win_get_state())
@@ -434,6 +437,7 @@ void page_main(void)
                 {
                     val_index = bat_val;
                 }
+
                 GUI_SetPointColor(1);
                 GUI_Fill(39, 1, 39 + val_index, 4);
                 GUI_SetPointColor(0);
@@ -455,6 +459,119 @@ void page_main(void)
             break;
     }
 }
+#else
+void page_main(void)
+{
+    switch (win_get_state())
+    {
+        case WIN_STATE_INIT:
+            GUI_Clear();
+            GUI_Rectangle(38, 0, 90, 5);
+            GUI_ShowChar(121, 0, '%', 12);
+            GUI_ShowChar(30, 51, 'M', 12);
+            GUI_DashboardDraw(0, 25, 16, 7, 22);
+            GUI_DashboardDraw(1, 73, 16, 7, 22);
+            button_attach(&btn_1, PRESS_REPEAT, cb_main_repeat);
+            button_attach(&btn_1, LONG_RRESS_START, cb_main_long);
+            button_attach(&btn_1, SINGLE_CLICK, cb_main_single);
+            button_attach(&btn_2, PRESS_REPEAT, cb_main_repeat);
+            button_attach(&btn_2, LONG_RRESS_START, cb_main_long);
+            button_attach(&btn_2, SINGLE_CLICK, cb_main_single);
+            win_set_flash_time(40);
+            win_set_exec_callback(cb_page_exec);
+            break;
+
+        case WIN_STATE_EXEC:
+            if (setting.light_en)
+            {
+                GUI_DrawBMP(0, 0, 16, 16, icon_light); //图片显示
+            }
+            else
+            {
+                GUI_SetPointColor(0);
+                GUI_Fill(0, 0, 15, 15);
+                GUI_SetPointColor(1);
+            }
+
+            if (send_info.status)
+            {
+                GUI_DrawBMP(16, 0, 16, 16, icon_power); //图片显示
+            }
+            else
+            {
+                GUI_SetPointColor(0);
+                GUI_Fill(16, 0, 31, 15);
+                GUI_SetPointColor(1);
+            }
+
+            if (send_info.direction == 0)
+            {
+                GUI_DrawBMP(0, 16, 16, 16, icon_arrow_up); //图片显示
+            }
+            else
+            {
+                GUI_DrawBMP(0, 16, 15, 31, icon_arrow_down); //图片显示
+            }
+
+            static uint32_t time = 0;
+
+            if (Sys_Time > time)
+            {
+                time = Sys_Time + 40;
+                static uint8_t iiii = 0;
+                GUI_DashboardSetAngle(0, iiii);
+                GUI_DashboardSetAngle(1, iiii);
+                iiii += 3;
+            }
+
+            GUI_Showfloat(33, 8, skate_info.voltage, 'V', 3, 1, 8);
+            GUI_Showfloat(63, 8, skate_info.mot_current, 'A', 4, 1, 8);
+            GUI_ShowNum(103, 0, Sys_Tx_Rate, 3, 12);
+            GUI_ShowNum(0, 51, skate_info.tacho_single, 5, 12);
+
+            if (Sys_Time > g_page_time)
+            {
+                static uint8_t val_index;
+                uint8_t bat_val;
+                g_page_time = Sys_Time + 200;
+                bat_val = system.bat_vol - BAT_VOL_LOW;
+
+                if ((TP4056_CHRG == 0))
+                {
+                    val_index += 1;
+
+                    if (val_index > 51)
+                    {
+                        val_index = bat_val;
+                    }
+                }
+                else
+                {
+                    val_index = bat_val;
+                }
+
+                GUI_SetPointColor(1);
+                GUI_Fill(39, 1, 39 + val_index, 4);
+                GUI_SetPointColor(0);
+                GUI_Fill(39 + val_index, 1, 89, 4);
+                GUI_SetPointColor(1);
+            }
+
+            break;
+
+        case WIN_STATE_EXIT:
+            button_attach(&btn_1, SINGLE_CLICK, NULL);
+            button_attach(&btn_1, PRESS_REPEAT, NULL);
+            button_attach(&btn_2, PRESS_REPEAT, NULL);
+            button_attach(&btn_2, LONG_RRESS_START, NULL);
+            button_attach(&btn_2, SINGLE_CLICK, NULL);
+            break;
+
+        default:
+            break;
+    }
+}
+#endif
 
 static void cb_para_single(void *arg)
 {

@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-05-26 00:29:08
+ * @LastEditTime: 2020-05-27 01:35:14
  * @Description: file content
  */
 
@@ -12,9 +12,8 @@
 
 #include "font.h"
 #include "type_def.h"
-#include "gui_basic.h"
-#include "gui_bitmap.h"
-#include "gui_char.h"
+#include "gui.h"
+
 
 #define OLED_CMD  0	//Ð´ÃüÁî
 #define OLED_DATA 1	//Ð´Êý¾Ý

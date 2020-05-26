@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-18 16:14:34
- * @LastEditTime: 2020-05-26 01:22:20
+ * @LastEditTime: 2020-05-27 02:50:03
  * @Description: file content
  */
 
@@ -10,11 +10,12 @@
 #include "led.h"
 #include "oled.h"
 #include "key.h"
-#include "windows.h"
+#include "gui_windows.h"
 #include "control.h"
 #include "stdio.h"
 #include "timer.h"
 #include "m_settings.h"
+#include "math.h"
 
 void page_main(void);
 
@@ -113,8 +114,6 @@ static void page_set_time(void)
 }
 
 
-#include "math.h"
-
 static void page_set_light(void)
 {
     switch (win_get_state())
@@ -123,39 +122,15 @@ static void page_set_light(void)
             GUI_Clear();
             GUI_ShowString(0, 0, options[select].name, 16);
             win_set_flash_time(20);
-            GUI_Arc(63, 30, 17, 30, 150);
+            
 
             break;
 
         case WIN_STATE_EXEC:
         {
-            static uint32_t time = 0;
-            static int16_t angle = -30;
-            static int8_t x_prev = 0, y_prev = 0;
+    
 
-            if (Sys_Time > time)
-            {
-                time = Sys_Time + 20;
-                angle+=3;
-
-                if (angle > 210)
-                {
-                    angle = -30;
-                }
-
-                // if (0 != y_prev)
-                {
-                    GUI_SetPointColor(0);
-                    GUI_Line(63, 30, 63 - x_prev, 30 - y_prev);
-                    GUI_SetPointColor(1);
-                }
-
-                int8_t xx = 16 * cosf((float)angle / 57.29578f);
-                int8_t yy = 16 * sinf((float)angle / 57.29578f);
-                x_prev = xx;
-                y_prev = yy;
-                GUI_Line(63, 30, 63 - xx, 30 - yy);
-            }
+          
         }
         break;
 

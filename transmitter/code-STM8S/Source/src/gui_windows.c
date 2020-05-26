@@ -9,7 +9,7 @@
 #include "type_def.h"
 #include "main.h"
 #include "oled.h"
-#include "windows.h"
+#include "gui_windows.h"
 
 static win_state_e g_win_state = WIN_STATE_INIT;
 static win_fun_t g_current_win = NULL;
