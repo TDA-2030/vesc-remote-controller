@@ -92,7 +92,7 @@ void page_boot(void)
             {
                 control_power(1);
                 led_set_rgb(200, 200, 200);
-                GUI_DrawBMP(0, 0, 128, 64, BMP1); //图片显示
+                GUI_DrawBMP(0, 0, 128, 64, BMP1); //开机图片显示
                 delay_ms(700);
                 win_set(page_connect);
             }
@@ -199,7 +199,7 @@ void page_connect(void)
             }
             else
             {
-                InitTIM2(4, 10000 - 1); //--定时器初始化 16分频
+                InitTIM2(4, 10000 - 1); //--无线通信定时器初始化 16分频
                 win_set(page_main);
             }
 

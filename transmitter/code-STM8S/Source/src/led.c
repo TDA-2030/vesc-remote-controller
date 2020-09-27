@@ -31,20 +31,20 @@ static const uint8_t gammaTable[256] = {
 
 
 /**************************************************************************
- * º¯ÊýÃû£ºPWM_Init
- * ÃèÊö  £ºPWM³õÊ¼»¯
- * ÊäÈë  £ºÎÞ
+ * å‡½æ•°åï¼šPWM_Init
+ * æè¿°  ï¼šPWMåˆå§‹åŒ–
+ * è¾“å…¥  ï¼šæ— 
  *
- * Êä³ö  £ºÎÞ
- * ·µ»Ø  £ºÎÞ
- * µ÷ÓÃ  £ºÍâ²¿µ÷ÓÃ
+ * è¾“å‡º  ï¼šæ— 
+ * è¿”å›ž  ï¼šæ— 
+ * è°ƒç”¨  ï¼šå¤–éƒ¨è°ƒç”¨
  *************************************************************************/
 static void PWM_Init(void)
 {
-    u16 TIM1_Period = 256 - 1; //¼ÆÊý
-    u16 TIM1_Prescaler = 15; //16·ÖÆµ
+    u16 TIM1_Period = 256 - 1; //è®¡æ•°
+    u16 TIM1_Prescaler = 15; //16åˆ†é¢‘
     TIM1_CR1 &= ~(MASK_TIM1_CR1_CEN);
-    //------------------------------³õÊ¼»¯TIM1Ê±¼ä»ù±¾µ¥Î»----------------------------
+    //------------------------------åˆå§‹åŒ–TIM1æ—¶é—´åŸºæœ¬å•ä½----------------------------
     /* Set the Prescaler value */
     TIM1_PSCRH = (uint8_t)(TIM1_Prescaler >> 8);
     TIM1_PSCRL = (uint8_t)(TIM1_Prescaler);
@@ -55,7 +55,7 @@ static void PWM_Init(void)
     TIM1_CR1 = (uint8_t)((1 << 7) | (0 << 5) | (0 << 4) | (0 << 3) | (0 << 1));
     /* Set the Repetition Counter value */
     TIM1_RCR = 0x00;
-    //--------------------------------³õÊ¼»¯TIM1 Channel1£¬Channel2£¬Channel3------------------------
+    //--------------------------------åˆå§‹åŒ–TIM1 Channel1ï¼ŒChannel2ï¼ŒChannel3------------------------
     /* Set the Output State & Set the Output N State & Set the Output Polarity &
     Set the Output N Polarity */
     TIM1_CCER1 = 0x00;
@@ -118,9 +118,9 @@ static void SetTIM1_PWM_DutyCycle(uint8_t ch, uint8_t Compare)
 
 
 /**
- * ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª
- * °æÈ¨ÉùÃ÷£º±¾ÎÄÎªCSDN²©Ö÷¡¸liefyuan¡¹µÄÔ­´´ÎÄÕÂ£¬×ñÑ­ CC 4.0 BY-SA °æÈ¨Ð­Òé£¬×ªÔØÇë¸½ÉÏÔ­ÎÄ³ö´¦Á´½Ó¼°±¾ÉùÃ÷¡£
- * Ô­ÎÄÁ´½Ó£ºhttps://blog.csdn.net/qq_28877125/java/article/details/83022379
+ * â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”
+ * ç‰ˆæƒå£°æ˜Žï¼šæœ¬æ–‡ä¸ºCSDNåšä¸»ã€Œliefyuanã€çš„åŽŸåˆ›æ–‡ç« ï¼Œéµå¾ª CC 4.0 BY-SA ç‰ˆæƒåè®®ï¼Œè½¬è½½è¯·é™„ä¸ŠåŽŸæ–‡å‡ºå¤„é“¾æŽ¥åŠæœ¬å£°æ˜Žã€‚
+ * åŽŸæ–‡é“¾æŽ¥ï¼šhttps://blog.csdn.net/qq_28877125/java/article/details/83022379
 */
 static void HSVtoRGB(uint16_t h, uint16_t s, uint16_t v, uint8_t *r, uint8_t *g, uint8_t *b)
 {
@@ -176,9 +176,9 @@ static void HSVtoRGB(uint16_t h, uint16_t s, uint16_t v, uint8_t *r, uint8_t *g,
 
 void led_init(void)
 {
-    PC_DDR |= 0x0f << 1; /* ÉèÖÃÊý¾Ý·½Ïò¼Ä´æÆ÷ 1ÎªÊä³ö£¬0ÎªÊäÈë--²é¿´STM8¼Ä´æÆ÷.pdf P87 */
-    PC_CR1 |= 0x0f << 1; /* ÉèÖÃÍÆÍìÊä³ö--²é¿´STM8¼Ä´æÆ÷.pdf P88 */
-    PC_CR2 |= 0x0f << 1; /* ÉèÖÃÊä³öÆµÂÊ 1Îª10M£¬0Îª2M--²é¿´STM8¼Ä´æÆ÷.pdf P89 */
+    PC_DDR |= 0x0f << 1; /* è®¾ç½®æ•°æ®æ–¹å‘å¯„å­˜å™¨ 1ä¸ºè¾“å‡ºï¼Œ0ä¸ºè¾“å…¥--æŸ¥çœ‹STM8å¯„å­˜å™¨.pdf P87 */
+    PC_CR1 |= 0x0f << 1; /* è®¾ç½®æŽ¨æŒ½è¾“å‡º--æŸ¥çœ‹STM8å¯„å­˜å™¨.pdf P88 */
+    PC_CR2 |= 0x0f << 1; /* è®¾ç½®è¾“å‡ºé¢‘çŽ‡ 1ä¸º10Mï¼Œ0ä¸º2M--æŸ¥çœ‹STM8å¯„å­˜å™¨.pdf P89 */
     PWM_Init();
     PWM_Open();
     SetTIM1_PWM_DutyCycle('L', 0);
@@ -208,4 +208,4 @@ void led_set_headlight(uint16_t v)
 }
 
 
-/******************* (C) COPYRIGHT ·ç³ÛiCreateÇ¶ÈëÊ½¿ª·¢¹¤×÷ÊÒ *****END OF FILE****/
+/******************* (C) COPYRIGHT é£Žé©°iCreateåµŒå…¥å¼å¼€å‘å·¥ä½œå®¤ *****END OF FILE****/

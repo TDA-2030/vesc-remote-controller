@@ -15,17 +15,17 @@
 #include "gui.h"
 
 
-#define OLED_CMD  0	//Ğ´ÃüÁî
-#define OLED_DATA 1	//Ğ´Êı¾İ
+#define OLED_CMD  0	//å†™å‘½ä»¤
+#define OLED_DATA 1	//å†™æ•°æ®
 #define OLED_MODE 0
 
 
 
-#define OLED_SCL   PD_ODR_ODR3//Ê±ÖÓ D0£¨SCLK)
-#define OLED_SDIN  PD_ODR_ODR4//D1£¨MOSI£© Êı¾İ
-#define OLED_RST   PD_ODR_ODR6//¸´Î»
-#define OLED_DC    PD_ODR_ODR7//Êı¾İ/ÃüÁî¿ØÖÆ
-#define OLED_CS    PD_ODR_ODR5 //Æ¬Ñ¡
+#define OLED_SCL   PD_ODR_ODR3//æ—¶é’Ÿ D0ï¼ˆSCLK)
+#define OLED_SDIN  PD_ODR_ODR4//D1ï¼ˆMOSIï¼‰ æ•°æ®
+#define OLED_RST   PD_ODR_ODR6//å¤ä½
+#define OLED_DC    PD_ODR_ODR7//æ•°æ®/å‘½ä»¤æ§åˆ¶
+#define OLED_CS    PD_ODR_ODR5 //ç‰‡é€‰
 
 
 #define OLED_CS_Clr()  OLED_CS=0
@@ -45,9 +45,9 @@
 
 
 
-//OLEDÄ£Ê½ÉèÖÃ
-//0:4Ïß´®ĞĞÄ£Ê½
-//1:²¢ĞĞ8080Ä£Ê½
+//OLEDæ¨¡å¼è®¾ç½®
+//0:4çº¿ä¸²è¡Œæ¨¡å¼
+//1:å¹¶è¡Œ8080æ¨¡å¼
 
 #define SIZE 16
 #define XLevelL		0x02
@@ -57,10 +57,10 @@
 #define	Brightness	0xFF
 #define X_WIDTH 	128
 #define Y_WIDTH 	64
-//-----------------OLED¶Ë¿Ú¶¨Òå----------------
+//-----------------OLEDç«¯å£å®šä¹‰----------------
 
 
-//OLED¿ØÖÆÓÃº¯Êı
+//OLEDæ§åˆ¶ç”¨å‡½æ•°
 void OLED_Init(void);
 void OLED_WR_Byte(uint8_t dat, uint8_t cmd);
 void OLED_SetPointColor(uint8_t color);

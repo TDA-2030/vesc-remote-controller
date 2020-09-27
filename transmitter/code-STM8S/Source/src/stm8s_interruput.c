@@ -45,7 +45,7 @@ __interrupt void EXTI_PORTC_IRQHandler(void)
 }
 static u8 retrycnt = 0;
 #pragma vector=8
-__interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01¶ÁÈ¡
+__interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01è¯»å–
 {
     uint8_t status;
     uint8_t RxLength;
@@ -57,7 +57,7 @@ __interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01¶ÁÈ¡
         if (status & MAX_TX)
         {
             //OLED_DrawPoint(100,0,1);
-            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//Çå³ıTX FIFO¼Ä´æÆ÷
+            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//æ¸…é™¤TX FIFOå¯„å­˜å™¨
 
             if (SYSTEM_STATE_NO_SIGNAL == system.state)
             {
@@ -74,9 +74,9 @@ __interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01¶ÁÈ¡
         }
         else if (status & RX_OK)
         {
-            RxLength = NRF24L01_Read_Reg(R_RX_PL_WID);		//¶ÁÈ¡½ÓÊÕµ½µÄÊı¾İ¸öÊı
-            NRF24L01_Read_Buf(RD_RX_PLOAD, nrf_rx_buf, RxLength);	//½ÓÊÕµ½Êı¾İ
-            NRF24L01_Write_Reg(FLUSH_RX, 0xff);				//Çå³ıRX FIFO
+            RxLength = NRF24L01_Read_Reg(R_RX_PL_WID);		//è¯»å–æ¥æ”¶åˆ°çš„æ•°æ®ä¸ªæ•°
+            NRF24L01_Read_Buf(RD_RX_PLOAD, nrf_rx_buf, RxLength);	//æ¥æ”¶åˆ°æ•°æ®
+            NRF24L01_Write_Reg(FLUSH_RX, 0xff);				//æ¸…é™¤RX FIFO
 
             if (Rx_Data_Handle() == 0)
             {
@@ -87,7 +87,7 @@ __interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01¶ÁÈ¡
         }
         else if (status & TX_OK)
         {
-            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//Çå³ıTX FIFO¼Ä´æÆ÷
+            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//æ¸…é™¤TX FIFOå¯„å­˜å™¨
             retrycnt = 0;
             TX_succeed_cnt++;
             NRF_Mode = MODE_RX;
@@ -99,7 +99,7 @@ __interrupt void EXTI_PORTD_IRQHandler(void)//---NRF24L01¶ÁÈ¡
             }
         }
 
-        NRF24L01_Write_Reg(STATUS, status);		//ÇåÖĞ¶Ï±êÖ¾
+        NRF24L01_Write_Reg(STATUS, status);		//æ¸…ä¸­æ–­æ ‡å¿—
         //LED=!LED;
     }
 }
@@ -122,7 +122,7 @@ __interrupt void TIM1_CAP_COM_IRQHandler(void)
 }
 
 #pragma vector=0xF
-__interrupt void TIM2_UPD_OVF_BRK_IRQHandler(void)//-----¶¨Ê±Æ÷2Òç³öÖĞ¶Ï
+__interrupt void TIM2_UPD_OVF_BRK_IRQHandler(void)//-----å®šæ—¶å™¨2æº¢å‡ºä¸­æ–­
 {
     static u8 count_time = 0, TX_cnt = 0;
 
@@ -145,7 +145,7 @@ __interrupt void TIM2_UPD_OVF_BRK_IRQHandler(void)//-----¶¨Ê±Æ÷2Òç³öÖĞ¶Ï
     if (++count_time > 100)
     {
         count_time = 0;
-        TX_succeed_cnt *= 100;  //À©´ó100±¶
+        TX_succeed_cnt *= 100;  //æ‰©å¤§100å€
         Sys_Tx_Rate = TX_succeed_cnt / TX_cnt;
         TX_cnt = TX_succeed_cnt = 0;
     }
@@ -222,4 +222,4 @@ __interrupt void EEPROM_EEC_IRQHandler(void)
 }
 
 
-/******************* (C) COPYRIGHT ·ç³ÛiCreateÇ¶ÈëÊ½¿ª·¢¹¤×÷ÊÒ *****END OF FILE****/
+/******************* (C) COPYRIGHT é£é©°iCreateåµŒå…¥å¼å¼€å‘å·¥ä½œå®¤ *****END OF FILE****/

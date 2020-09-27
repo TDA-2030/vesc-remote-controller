@@ -15,7 +15,7 @@
 #define ADC_CH_THROTTLE (1)
 
 
-#define REFE_VOL (122.0f) //∑≈¥Û¡À100±∂F
+#define REFE_VOL (122.0f) //ÊîæÂ§ß‰∫Ü100ÂÄçF
 
 enum
 {
@@ -36,10 +36,10 @@ static uint8_t filter_index[FILTER_ID_MAX] = {0};
  */
 void ADC_Init(void)
 {
-    ADC_CR1 = (2 << 4) | (0 << 1) | (0 << 0); //ADC ±÷” ‰»Î∆µ¬ Œ™16MHz ’‚¿Ô…Ë÷√∑÷∆µœµ ˝Œ™2  µ•¥Œ◊™ªªƒ£ Ω œ»Ω˚÷πADC◊™ªª
-    ADC_CR2 = (1 << 3) | (0 << 1);     //…Ë÷√ ˝æ›”“∂‘∆Î  Ω˚÷π…®√Ëƒ£ Ω
-    ADC_TDRL |= 3 << 2;                   //AIN2,AIN3Ω˚÷π ©√‹Ãÿ¥•∑¢∆˜π¶ƒ‹
-    ADC_CR1 |= 1 << 0;                    //µ⁄“ª¥Œ–¥1 «¥”µÕπ¶∫ƒƒ£ ΩªΩ–—
+    ADC_CR1 = (2 << 4) | (0 << 1) | (0 << 0); //ADCÊó∂ÈíüËæìÂÖ•È¢ëÁéá‰∏∫16MHz ËøôÈáåËÆæÁΩÆÂàÜÈ¢ëÁ≥ªÊï∞‰∏∫2  ÂçïÊ¨°ËΩ¨Êç¢Ê®°Âºè ÂÖàÁ¶ÅÊ≠¢ADCËΩ¨Êç¢
+    ADC_CR2 = (1 << 3) | (0 << 1);     //ËÆæÁΩÆÊï∞ÊçÆÂè≥ÂØπÈΩê  Á¶ÅÊ≠¢Êâ´ÊèèÊ®°Âºè
+    ADC_TDRL |= 3 << 2;                   //AIN2,AIN3Á¶ÅÊ≠¢ÊñΩÂØÜÁâπËß¶ÂèëÂô®ÂäüËÉΩ
+    ADC_CR1 |= 1 << 0;                    //Á¨¨‰∏ÄÊ¨°ÂÜô1ÊòØ‰ªé‰ΩéÂäüËÄóÊ®°ÂºèÂî§ÈÜí
 
     for (size_t i = 0; i < ARRAY_LEN; i++)
     {
@@ -55,18 +55,18 @@ void ADC_Init(void)
 uint16_t ADC_Get_Val(uint8_t channel)
 {
     uint16_t value, temph;
-    uint8_t templ;                  // ∂®“Âtempl¥Ê¥¢µÕ8Œª ˝æ›  temph¥Ê¥¢∏ﬂ8Œª ˝æ›
+    uint8_t templ;                  // ÂÆö‰πâtemplÂ≠òÂÇ®‰Ωé8‰ΩçÊï∞ÊçÆ  temphÂ≠òÂÇ®È´ò8‰ΩçÊï∞ÊçÆ
     channel &= 0x0f;
-    ADC_CSR &= ~0x0f; //«Â≥˝…œ¥ŒÕ®µ¿∫≈
-    ADC_CSR |= (channel << 0);       //≤ª”√Õ‚≤ø¥•∑¢ Ω˚÷π◊™ªªΩ· ¯÷–∂œ …Ë÷√◊™ªªÕ®µ¿
+    ADC_CSR &= ~0x0f; //Ê∏ÖÈô§‰∏äÊ¨°ÈÄöÈÅìÂè∑
+    ADC_CSR |= (channel << 0);       //‰∏çÁî®Â§ñÈÉ®Ëß¶Âèë Á¶ÅÊ≠¢ËΩ¨Êç¢ÁªìÊùü‰∏≠Êñ≠ ËÆæÁΩÆËΩ¨Êç¢ÈÄöÈÅì
     ADC_CR1 |= 1;
 
-    while (!(ADC_CSR & 0x80));          //µ»¥˝◊™ªªÕÍ≥…
+    while (!(ADC_CSR & 0x80));          //Á≠âÂæÖËΩ¨Êç¢ÂÆåÊàê
 
     templ = ADC_DRL;
-    temph = ADC_DRH;                  //∂¡»°ADC◊™ªª  ‘⁄◊Û∂‘∆Î∫Õ”“∂‘∆Îƒ£ Ωœ¬ ∂¡»° ˝æ›µƒÀ≥–Ú≤ªÕ¨  ≤ŒøºSTM8ºƒ¥Ê∆˜.PDFP371
-    ADC_CSR &= ~0x80;   //«Â≥˝±Í÷æŒª
-    value = (unsigned int)(templ | (temph << 8));   //◊¢“‚ «10Œªµƒ◊™ªªæ´∂» value°¢temph”¶Œ™unsigned int ±‰¡ø
+    temph = ADC_DRH;                  //ËØªÂèñADCËΩ¨Êç¢  Âú®Â∑¶ÂØπÈΩêÂíåÂè≥ÂØπÈΩêÊ®°Âºè‰∏ã ËØªÂèñÊï∞ÊçÆÁöÑÈ°∫Â∫è‰∏çÂêå  ÂèÇËÄÉSTM8ÂØÑÂ≠òÂô®.PDFP371
+    ADC_CSR &= ~0x80;   //Ê∏ÖÈô§Ê†áÂøó‰Ωç
+    value = (unsigned int)(templ | (temph << 8));   //Ê≥®ÊÑèÊòØ10‰ΩçÁöÑËΩ¨Êç¢Á≤æÂ∫¶ value„ÄÅtemphÂ∫î‰∏∫unsigned int ÂèòÈáè
     return  value;
 }
 
@@ -93,7 +93,7 @@ uint16_t ADC_Get_Voltage(void)
         sum += filter_array[FILTER_ID_BAT_VOL][i];
     }
 
-    return sum / ARRAY_LEN; // ∑≈¥Û¡À100±∂
+    return sum / ARRAY_LEN; // ÊîæÂ§ß‰∫Ü100ÂÄç
 }
 
 
@@ -119,5 +119,5 @@ uint16_t ADC_Get_Throttle(void)
         sum += filter_array[FILTER_ID_THROTTLE][i];
     }
 
-    return sum / len; // ∑≈¥Û¡À100±∂
+    return sum / len; // ÊîæÂ§ß‰∫Ü100ÂÄç
 }
