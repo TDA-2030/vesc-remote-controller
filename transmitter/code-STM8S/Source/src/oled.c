@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-04-06 23:39:05
+ * @LastEditTime: 2020-05-26 01:17:06
  * @Description: file content
  */
 
@@ -19,12 +19,20 @@
 //[6]0 1 2 3 ... 127
 //[7]0 1 2 3 ... 127
 static uint8_t OLED_GRAM[128][8];
-static uint8_t g_show_mode = 1;
+static bool g_update = 1;
+static uint8_t g_point_color = 1;
 
 //更新显存到LCD
 void OLED_Refresh_Gram(void)
 {
     uint8_t i, n;
+
+    if (0 == g_update)
+    {
+        return;
+    }
+
+    g_update = 0;
 
     for (i = 0; i < 8; i++)
     {
@@ -34,11 +42,6 @@ void OLED_Refresh_Gram(void)
 
         for (n = 0; n < 128; n++)OLED_WR_Byte(OLED_GRAM[n][i], OLED_DATA);
     }
-}
-
-void OLED_ShowModeSet(uint8_t mode)
-{
-    g_show_mode = mode;
 }
 
 #if OLED_MODE==1
@@ -98,6 +101,19 @@ void OLED_WR_Byte(uint8_t dat, uint8_t cmd)
 #endif
 
 
+void OLED_GetPointColor(uint8_t **out_p)
+{
+    if(NULL != out_p)
+    {
+        *out_p = &g_point_color;
+    }
+}
+
+void OLED_SetPointColor(uint8_t color)
+{
+    g_point_color = color;
+}
+
 //开启OLED显示
 void OLED_Display_On(void)
 {
@@ -130,19 +146,27 @@ void OLED_DrawPoint(uint8_t x, uint8_t y, uint8_t t)
 
     if (t)OLED_GRAM[x][pos] |= temp;
     else OLED_GRAM[x][pos] &= ~temp;
+
+    g_update = 1;
 }
 
-//x1,y1,x2,y2 填充区域的对角坐标
-//确保x1<=x2;y1<=y2 0<=x1<=127 0<=y1<=63
-//dot:0,清空;1,填充
-void OLED_Fill(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2, uint8_t dot)
+//画点
+//x:0~127
+//y:0~63
+void OLED_DrawPointFast(uint8_t x, uint8_t y)
 {
-    uint8_t x, y;
+    uint8_t pos, bx, temp = 0;
 
-    for (x = x1; x <= x2; x++)
-    {
-        for (y = y1; y <= y2; y++)OLED_DrawPoint(x, y, dot);
-    }
+    if (x > 127 || y > 63)return; //超出范围了.
+
+    pos = y / 8;
+    bx = 7 - y % 8;
+    temp = 1 << (bx);
+
+    if (g_point_color)OLED_GRAM[x][pos] |= temp;
+    else OLED_GRAM[x][pos] &= ~temp;
+
+    g_update = 1;
 }
 
 //清屏函数,清完屏,整个屏幕是黑色的!和没点亮一样!!!
@@ -155,183 +179,6 @@ void OLED_Clear(void)
     //OLED_Refresh_Gram();//更新显示
 }
 
-//在指定位置显示一个字符,包括部分字符
-//x:0~127
-//y:0~63
-//size:选择字体 12/16/24
-void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size)
-{
-    uint8_t temp, t, t1;
-    uint8_t y0 = y;
-    uint8_t csize = (size / 8 + ((size % 8) ? 1 : 0)) * (size / 2);		//得到字体一个字符对应点阵集所占的字节数
-
-    if (8 == size) csize = 6;
-
-    if (24 == size)
-    {
-        chr = chr - '0';
-
-        if (chr > 9)return;
-    }
-    else chr = chr - ' '; //得到偏移后的值
-
-    for (t = 0; t < csize; t++)
-    {
-        if (size == 8)temp = asc2_0806[chr][t];     //调用0608字体
-        else if (size == 12)temp = asc2_1206[chr][t]; 	 	//调用1206字体
-        else if (size == 16)temp = asc2_1608[chr][t];	//调用1608字体
-        else if (size == 24)temp = asc2_2412[chr][t];	//调用2412字体
-        else return;								//没有的字库
-
-        for (t1 = 0; t1 < 8; t1++)
-        {
-            if (temp & 0x80)OLED_DrawPoint(x, y, g_show_mode);
-            else OLED_DrawPoint(x, y, !g_show_mode);
-
-            temp <<= 1;
-            y++;
-
-            if ((y - y0) == size)
-            {
-                y = y0;
-                x++;
-                break;
-            }
-        }
-    }
-}
-
-//m^n函数
-uint32_t mypow(uint8_t m, uint8_t n)
-{
-    uint32_t result = 1;
-
-    while (n--)result *= m;
-
-    return result;
-}
-//显示2个数字
-//x,y :起点坐标
-//len :数字的位数
-//size:字体大小
-//mode:模式	0,填充模式;1,叠加模式
-//num:数值(0~4294967295);
-void OLED_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size)
-{
-    uint8_t t, temp;
-    uint8_t enshow = 0;
-    uint8_t offset;
-
-    if (size == 8) offset = 6;
-    else offset =	size / 2;
-
-    for (t = 0; t < len; t++)
-    {
-        temp = (num / mypow(10, len - t - 1)) % 10;
-
-        if (enshow == 0 && t < (len - 1))
-        {
-            if (temp == 0)
-            {
-                OLED_ShowChar(x + (offset * t), y, '0', size);
-                continue;
-            }
-            else enshow = 1;
-        }
-
-        OLED_ShowChar(x + (offset * t), y, temp + '0', size);
-    }
-}
-
-static int8_t my_i2a(int32_t in_num, char *out_str)
-{
-    uint8_t remainder;
-    uint8_t len = 0;
-
-    if (NULL == out_str)
-    {
-        return 0;
-    }
-
-    do
-    {
-        remainder = in_num % 10;
-        in_num = in_num / 10;
-        *(out_str++) = remainder + '0';
-        len++;
-    }
-    while (in_num);
-
-    return len;
-}
-
-void OLED_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len, uint8_t point, uint8_t size)
-{
-    uint8_t width;
-    char buf[10];
-    int8_t num_len;
-
-    if (8 == size) width = 6;
-    else width = size >> 1;
-
-    x += (width * len);
-    num_len = my_i2a(num, buf);
-
-    if (uint != 0)
-    {
-        OLED_ShowChar(x+width, y, uint, size);
-    }
-
-    for (size_t i = 0; i < len; i++)
-    {
-        if (i == point)
-        {
-            OLED_ShowChar(x, y, '.', size);
-            x -= width;
-        }
-
-        if (i < num_len)
-        {
-            OLED_ShowChar(x, y, (uint8_t)buf[i], size);
-        }
-        else
-        {
-            OLED_ShowChar(x, y, '0', size);
-        }
-
-        x -= width;
-    }
-}
-
-//显示字符串
-//x,y:起点坐标
-//size:字体大小
-//*p:字符串起始地址
-void OLED_ShowString(uint8_t x, uint8_t y, const uint8_t *p, uint8_t size)
-{
-    while ((*p <= '~') && (*p >= ' ')) //判断是不是非法字符!
-    {
-        if (x > (128 - (size / 2)))
-        {
-            x = 0;
-            y += size;
-        }
-
-        if (y > (64 - size))
-        {
-            y = x = 0;
-            OLED_Clear();
-        }
-
-        OLED_ShowChar(x, y, *p, size);
-
-        if (8 == size)x += 6;
-        else  x += size / 2;
-
-        p++;
-    }
-}
-
 //坐标设置
 void OLED_Set_Pos(uint8_t x, uint8_t y)
 {
@@ -339,119 +186,7 @@ void OLED_Set_Pos(uint8_t x, uint8_t y)
     OLED_WR_Byte(((x & 0xf0) >> 4) | 0x10, OLED_CMD);
     OLED_WR_Byte((x & 0x0f), OLED_CMD);
 }
-/***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y的范围0～63*****************/
-void OLED_DrawBMP(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1, const uint8_t BMP[])
-{
-    unsigned char x, y;
-    y1++;
-    x1++;
 
-    if (y0 % 8 || y1 % 8) return;
-
-    y0 /= 8;
-    y1 /= 8;
-
-    for (y = y0; y < y1; y++)
-    {
-        for (x = x0; x < x1; x++)
-            OLED_GRAM[x][y] = *BMP++;
-    }
-
-    OLED_Refresh_Gram();//更新显示
-}
-
-//画线
-//x1,y1:起点坐标
-//x2,y2:终点坐标
-void LCD_DrawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
-{
-    uint16_t t;
-    int xerr = 0, yerr = 0, delta_x, delta_y, distance;
-    int incx, incy, uRow, uCol;
-    delta_x = x2 - x1; //计算坐标增量
-    delta_y = y2 - y1;
-    uRow = x1;
-    uCol = y1;
-
-    if (delta_x > 0)incx = 1; //设置单步方向
-    else if (delta_x == 0)incx = 0; //垂直线
-    else
-    {
-        incx = -1;
-        delta_x = -delta_x;
-    }
-
-    if (delta_y > 0)incy = 1;
-    else if (delta_y == 0)incy = 0; //水平线
-    else
-    {
-        incy = -1;
-        delta_y = -delta_y;
-    }
-
-    if (delta_x > delta_y)distance = delta_x; //选取基本增量坐标轴
-    else distance = delta_y;
-
-    for (t = 0; t <= distance + 1; t++) //画线输出
-    {
-        OLED_DrawPoint(uRow, uCol, g_show_mode); //画点
-        xerr += delta_x ;
-        yerr += delta_y ;
-
-        if (xerr > distance)
-        {
-            xerr -= distance;
-            uRow += incx;
-        }
-
-        if (yerr > distance)
-        {
-            yerr -= distance;
-            uCol += incy;
-        }
-    }
-}
-//画矩形
-//(x1,y1),(x2,y2):矩形的对角坐标
-void LCD_DrawRectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
-{
-    LCD_DrawLine(x1, y1, x2, y1);
-    LCD_DrawLine(x1, y1, x1, y2);
-    LCD_DrawLine(x1, y2, x2, y2);
-    LCD_DrawLine(x2, y1, x2, y2);
-}
-//在指定位置画一个指定大小的圆
-//(x,y):中心点
-//r    :半径
-void LCD_Draw_Circle(uint16_t x0, uint16_t y0, uint8_t r)
-{
-    int a, b;
-    int di;
-    a = 0;
-    b = r;
-    di = 3 - (r << 1);       //判断下个点位置的标志
-
-    while (a <= b)
-    {
-        OLED_DrawPoint(x0 + a, y0 - b, g_show_mode);       //5
-        OLED_DrawPoint(x0 + b, y0 - a, g_show_mode);       //0
-        OLED_DrawPoint(x0 + b, y0 + a, g_show_mode);       //4
-        OLED_DrawPoint(x0 + a, y0 + b, g_show_mode);       //6
-        OLED_DrawPoint(x0 - a, y0 + b, g_show_mode);       //1
-        OLED_DrawPoint(x0 - b, y0 + a, g_show_mode);
-        OLED_DrawPoint(x0 - a, y0 - b, g_show_mode);       //2
-        OLED_DrawPoint(x0 - b, y0 - a, g_show_mode);       //7
-        a++;
-
-        //使用Bresenham算法画圆
-        if (di < 0)di += 4 * a + 6;
-        else
-        {
-            di += 10 + 4 * (a - b);
-            b--;
-        }
-    }
-}
 
 //
 //

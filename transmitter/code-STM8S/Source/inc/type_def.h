@@ -1,3 +1,9 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-05-25 01:21:14
+ * @Description: file content
+ */ 
 
 #ifndef __TYPE_DEF_H
 #define __TYPE_DEF_H
@@ -31,7 +37,8 @@ typedef unsigned char BYTE;
 #define u16 uint16_t
 #define u32 uint32_t
 #define EnableInterrupt  __enable_interrupt() 
+
+
+#define PI_ (3.1415926f)
+
 #endif
-
-
-/******************* (C) COPYRIGHT 风驰iCreate嵌入式开发工作室 *****END OF FILE****/

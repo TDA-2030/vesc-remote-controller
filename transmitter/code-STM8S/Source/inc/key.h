@@ -7,7 +7,7 @@ extern struct Button btn_1;
 extern struct Button btn_2;
 
 
-void KEY_Init(void);          //°´¼ü³õÊ¼»¯
+void KEY_Init(void);  
 
 
 

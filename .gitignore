@@ -14,7 +14,9 @@
 *.scvd
 *.zhouli
 *.uvoptx
-**/.vscode
+*.lst
+**/MDK-ARM/*.txt
+**/MDK-ARM/*.ini
 
 .vscode/
 mininrf/

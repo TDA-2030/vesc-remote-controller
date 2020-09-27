@@ -1,5 +1,11 @@
-#ifndef __WINDOWS_H__
-#define __WINDOWS_H__
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-05-27 00:10:54
+ * @Description: file content
+ */ 
+#ifndef __GUI_WINDOWS_H__
+#define __GUI_WINDOWS_H__
 
 typedef void (*win_fun_t)(void);
 typedef enum

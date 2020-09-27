@@ -22,29 +22,29 @@ void EEPROM_unlock(void)
     FLASH_CR1=0x00;
     FLASH_CR2=0x00;
     FLASH_NCR2=0xFF;
-    FLASH_DUKR = 0xAE;	// Ğ´ÈëµÚÒ»¸öÃÜÔ¿
-    FLASH_DUKR = 0x56;	// Ğ´ÈëµÚ¶ş¸öÃÜÔ¿
-  } while((--rty)&&((FLASH_IAPSR & 0x08) == 0));	// Èô½âËøÎ´³É¹¦£¬ÔòÖØĞÂÔÙÀ´
+    FLASH_DUKR = 0xAE;	// å†™å…¥ç¬¬ä¸€ä¸ªå¯†é’¥
+    FLASH_DUKR = 0x56;	// å†™å…¥ç¬¬äºŒä¸ªå¯†é’¥
+  } while((--rty)&&((FLASH_IAPSR & 0x08) == 0));	// è‹¥è§£é”æœªæˆåŠŸï¼Œåˆ™é‡æ–°å†æ¥
 }
 
 
 void EEPROM_lock(void)
 {
-  FLASH_IAPSR=(u8)(~0x08); //ÖØĞÂÉÏËø
+  FLASH_IAPSR=(u8)(~0x08); //é‡æ–°ä¸Šé”
 }
 
 
-//EEPROMÖ¸¶¨µØÖ·Ğ´ÈëÒ»¸öÊı¾İ addr:Ïà¶ÔµØÖ· dat:Êı¾İ
+//EEPROMæŒ‡å®šåœ°å€å†™å…¥ä¸€ä¸ªæ•°æ® addr:ç›¸å¯¹åœ°å€ dat:æ•°æ®
 void EEPROM_write_byte_uul(unsigned char addr, unsigned char dat)
 {
   unsigned char  *p;
   p=(unsigned char  *)(EP_HEADER_ADDR + addr);
   *p=dat;
-  while(!(FLASH_IAPSR&0x04)); //µÈ´ıĞ´²Ù×÷³É¹¦
+  while(!(FLASH_IAPSR&0x04)); //ç­‰å¾…å†™æ“ä½œæˆåŠŸ
 }
  
 
-//EEPROMÖ¸¶¨µØÖ·¶Á³öÒ»¸öÊı¾İ addr:Ïà¶ÔµØÖ·
+//EEPROMæŒ‡å®šåœ°å€è¯»å‡ºä¸€ä¸ªæ•°æ® addr:ç›¸å¯¹åœ°å€
 unsigned char EEPROM_read_byte_uul(unsigned char addr)
 {
   unsigned char *p;

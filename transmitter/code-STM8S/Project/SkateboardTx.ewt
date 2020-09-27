@@ -1952,9 +1952,6 @@
       <name>$PROJ_DIR$\..\Source\src\exti.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Source\src\font.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\Source\src\key.c</name>
     </file>
     <file>
@@ -1991,13 +1988,31 @@
       <name>$PROJ_DIR$\..\Source\src\crc.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Source\src\font.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\gui_basic.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\gui_bitmap.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\gui_char.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\gui_dashboard.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\gui_windows.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\Source\src\m_settings.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Source\src\main.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Source\src\menu.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\Source\src\windows.c</name>
     </file>
   </group>
 </project>

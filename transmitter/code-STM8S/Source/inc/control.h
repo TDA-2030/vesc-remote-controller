@@ -1,6 +1,7 @@
 #ifndef __CONTROL_H
 #define __CONTROL_H
 
+#include "24l01.h"
   
 #define TP4056_CHRG   PA_IDR_IDR2 //
 #define TP4056_STDBY  PA_IDR_IDR1 //   
