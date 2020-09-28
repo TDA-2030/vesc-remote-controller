@@ -8,10 +8,25 @@
 #define MINOR_VERSION 1
 
 
+typedef enum {
+    SPEED_STYLE_NUMBER,
+    SPEED_STYLE_DASHBOARD,
+    SPEED_STYLE_CURVE,
+}speed_show_style_t;
+
+typedef enum
+{
+    SYSTEM_STATE_IDLE,     //已连接，未开机
+    SYSTEM_STATE_RUNNING,  //运行中
+    SYSTEM_STATE_CHARGING, //充电中
+    SYSTEM_STATE_NO_SIGNAL,//信号丢失
+}sys_status_t;
+
 typedef struct
 {
     uint16_t check;
 
+    speed_show_style_t speed_style;
 
     uint8_t light_en;
     uint8_t light1;
@@ -25,20 +40,14 @@ extern Setting_TypeDef setting;
 
 typedef struct
 {
-    volatile uint8_t state;
+    volatile sys_status_t state;
     uint16_t auto_off_timer;
 	uint16_t bat_vol;
 
 } System_TypeDef;
 extern System_TypeDef system;
 
-enum
-{
-    SYSTEM_STATE_IDLE,     //已连接，未开机
-    SYSTEM_STATE_RUNNING,  //运行中
-    SYSTEM_STATE_CHARGING, //充电中
-    SYSTEM_STATE_NO_SIGNAL,//信号丢失
-};
+
 
 extern uint32_t Sys_Time;
 

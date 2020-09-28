@@ -14,22 +14,23 @@
 #include "adc.h"
 #include "exti.h"
 #include "crc.h"
-#include "menu.h"
-
+#include "timer.h"
+#include "led.h"
+#include "key.h"
+#include "main.h"
 
 
 //接收和发射数据缓存数组
-u8 nrf_tx_buf[32] = {0};
-u8 nrf_rx_buf[32] = {0};
+static u8 nrf_tx_buf[32] = {0};
+static u8 nrf_rx_buf[32] = {0};
 
 skate_info_t skate_info = {0};
 send_info_t send_info = {0};
 
-
-
-nRf24l01ModeType NRF_Mode = MODE_TX; //NRF模块连接模式
-u16 TX_succeed_cnt = 0; //发送成功计数器
-u8 Sys_Tx_Rate = 0;
+static nRf24l01ModeType NRF_Mode = MODE_TX; //NRF模块连接模式
+static u8 retrycnt = 0;
+static u16 TX_succeed_cnt = 0; //发送成功计数器
+static u8 Sys_Tx_Rate = 0;
 
 enum
 {
@@ -112,7 +113,7 @@ enum
 };
 
 
-void AddToArray(uint8_t **pt, uint8_t d_type, uint32_t dat)
+static void AddToArray(uint8_t **pt, uint8_t d_type, uint32_t dat)
 {
     uint8_t *p = *pt;
 
@@ -139,7 +140,7 @@ void AddToArray(uint8_t **pt, uint8_t d_type, uint32_t dat)
     *pt += data2bytes[d_type][1];
 }
 
-uint32_t ParseToData(uint8_t **pt, uint8_t d_type)
+static uint32_t ParseToData(uint8_t **pt, uint8_t d_type)
 {
     uint32_t r;
     uint8_t *p = *pt;
@@ -166,30 +167,7 @@ uint32_t ParseToData(uint8_t **pt, uint8_t d_type)
     return r;
 }
 
-void control_Init(void)
-{
-    PA_DDR &= ~(3 << 1); //设置为输入模式
-    PA_CR1 |= (3 << 1); //设置为上拉输入
-    PA_CR2 &= ~(3 << 1); //设置没有中断
-}
-
-void control_power(uint8_t state)
-{
-    if (state)
-    {
-        PB_DDR |= 1 << 2; //数据方向寄存器 1为输出，0为输入
-        PB_CR1 |= 1 << 2; //推挽输出
-        PB_ODR_ODR2 = 1;
-    }
-    else
-    {
-        PB_DDR &= ~(1 << 2); //数据方向寄存器 1为输出，0为输入
-        PB_CR1 &= ~(1 << 2); //推挽输出
-        PB_ODR_ODR2 = 0;
-    }
-}
-
-u8 Rx_Data_Handle(void)
+static u8 Rx_Data_Handle(void)
 {
     uint8_t *ptr = nrf_rx_buf;
     uint8_t fid;
@@ -239,7 +217,7 @@ u8 Rx_Data_Handle(void)
     return 0;
 }
 
-u8 Upload_data(void)
+static u8 Upload_data(void)
 {
     uint8_t *ptr = nrf_tx_buf;
     static uint8_t fid = TX_FRAME_1;
@@ -279,6 +257,135 @@ u8 Upload_data(void)
     ptr = nrf_tx_buf;
     AddToArray(&ptr, nrf_data_crc, crc16(nrf_tx_buf + 2, sizeof(nrf_tx_buf) - 2)); //写入接收端校验码
     return 0;
+}
+
+void nrf_irq_handler(void)
+{
+    uint8_t status;
+    uint8_t RxLength;
+
+    if (NRF24L01_IRQ == 0)
+    {
+        status = NRF24L01_Read_Status_Register();
+
+        if (status & MAX_TX)
+        {
+            //OLED_DrawPoint(100,0,1);
+            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//清除TX FIFO寄存器
+
+            if (SYSTEM_STATE_NO_SIGNAL == system.state)
+            {
+            }
+            else
+            {
+                if (++retrycnt > 5)
+                {
+                    retrycnt = 0;
+                    NRF_Mode = MODE_RX;
+                    RF24L01_Set_Mode(MODE_RX);
+                }
+            }
+        }
+        else if (status & RX_OK)
+        {
+            RxLength = NRF24L01_Read_Reg(R_RX_PL_WID);		//读取接收到的数据个数
+            NRF24L01_Read_Buf(RD_RX_PLOAD, nrf_rx_buf, RxLength);	//接收到数据
+            NRF24L01_Write_Reg(FLUSH_RX, 0xff);				//清除RX FIFO
+
+            if (Rx_Data_Handle() == 0)
+            {
+                retrycnt = 0;
+                NRF_Mode = MODE_TX;
+                RF24L01_Set_Mode(MODE_TX);
+            }
+        }
+        else if (status & TX_OK)
+        {
+            NRF24L01_Write_Reg(FLUSH_TX, 0xff);	//清除TX FIFO寄存器
+            retrycnt = 0;
+            TX_succeed_cnt++;
+            NRF_Mode = MODE_RX;
+            RF24L01_Set_Mode(MODE_RX);
+
+            if (SYSTEM_STATE_NO_SIGNAL == system.state)
+            {
+                system.state = SYSTEM_STATE_IDLE;
+            }
+        }
+
+        NRF24L01_Write_Reg(STATUS, status);		//清中断标志
+        //LED=!LED;
+    }
+}
+
+void timer_period_handler(void)
+{
+    static u8 count_time = 0, TX_cnt = 0;
+
+    if (NRF_Mode == MODE_TX)
+    {
+        Upload_data();
+        NRF24L01_TxPacket(nrf_tx_buf, 32);
+        TX_cnt++;
+    }
+    else
+    {
+        if (++retrycnt > 5)
+        {
+            retrycnt = 0;
+            NRF_Mode = MODE_TX;
+            RF24L01_Set_Mode(MODE_TX);
+        }
+    }
+
+    if (++count_time > 100)
+    {
+        count_time = 0;
+        TX_succeed_cnt *= 100;  //扩大100倍
+        Sys_Tx_Rate = TX_succeed_cnt / TX_cnt;
+        TX_cnt = TX_succeed_cnt = 0;
+    }
+}
+
+
+
+
+void control_Init(void)
+{
+    PA_DDR &= ~(3 << 1); //设置为输入模式
+    PA_CR1 |= (3 << 1); //设置为上拉输入
+    PA_CR2 &= ~(3 << 1); //设置没有中断
+}
+
+void control_power(uint8_t state)
+{
+    if (state)
+    {
+        PB_DDR |= 1 << 2; //数据方向寄存器 1为输出，0为输入
+        PB_CR1 |= 1 << 2; //推挽输出
+        PB_ODR_ODR2 = 1;
+    }
+    else
+    {
+        PB_DDR &= ~(1 << 2); //数据方向寄存器 1为输出，0为输入
+        PB_CR1 &= ~(1 << 2); //推挽输出
+        PB_ODR_ODR2 = 0;
+    }
+}
+
+uint8_t control_get_rssi(void)
+{
+    return Sys_Tx_Rate;
+}
+
+skate_info_t *control_get_skate_info(void)
+{
+    return &skate_info;
+}
+
+send_info_t *control_get_send_info(void)
+{
+    return &send_info;
 }
 
 
