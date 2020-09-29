@@ -7,10 +7,19 @@
 #ifndef __OLEDFONT_H
 #define __OLEDFONT_H  
 
-extern const unsigned char asc2_0806[95][6];
-extern const unsigned char asc2_1206[95][12];
-extern const unsigned char asc2_1608[95][16];
-extern const unsigned char asc2_2412[10][36];
+#include "type_def.h"
+
+typedef struct {
+  const uint8_t *table;
+  uint16_t Width;
+  uint16_t Height;
+} FONT_t;
+
+extern FONT_t Font24;
+extern FONT_t Font16;
+extern FONT_t Font12;
+extern FONT_t Font8;
+
 
 extern const unsigned char BMP1[];
 extern const unsigned char icon_power[];

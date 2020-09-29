@@ -85,14 +85,14 @@ static void page_set_time(void)
             send_info.hour = skate_info.hour;
             send_info.min = skate_info.min;
             send_info.sec = skate_info.sec;
-            GUI_ShowString(24, 16, "    -  -  ", 16);
-            GUI_ShowNum(24, 16, 2000 + send_info.year, 4, 16);
-            GUI_ShowNum(64, 16, send_info.month, 2, 16);
-            GUI_ShowNum(88, 16, send_info.day, 2, 16);
-            GUI_ShowString(32, 16, "  -  -  ", 16);
-            GUI_ShowNum(32, 16, send_info.hour, 2, 16);
-            GUI_ShowNum(56, 16, send_info.min, 2, 16);
-            GUI_ShowNum(80, 16, send_info.sec, 2, 16);
+            GUI_ShowString(24, 16, "    -  -  ", &Font16);
+            GUI_ShowNum(24, 16, 2000 + send_info.year, 4, &Font16);
+            GUI_ShowNum(64, 16, send_info.month, 2, &Font16);
+            GUI_ShowNum(88, 16, send_info.day, 2, &Font16);
+            GUI_ShowString(32, 16, "  -  -  ", &Font16);
+            GUI_ShowNum(32, 16, send_info.hour, 2, &Font16);
+            GUI_ShowNum(56, 16, send_info.min, 2, &Font16);
+            GUI_ShowNum(80, 16, send_info.sec, 2, &Font16);
             button_attach(&btn_1, PRESS_DOWN, cb_set_time_single);
             button_attach(&btn_2, PRESS_DOWN, cb_set_time_single);
             button_attach(&btn_2, LONG_RRESS_START, cb_set_time_long);
@@ -120,7 +120,7 @@ static void page_set_light(void)
     {
         case WIN_STATE_INIT:
             GUI_Clear();
-            GUI_ShowString(0, 0, options[select].name, 16);
+            GUI_ShowString(0, 0, options[select].name, &Font16);
             win_set_flash_time(20);
             
 
@@ -149,7 +149,7 @@ static void page_set_sys(void)
     {
         case WIN_STATE_INIT:
             GUI_Clear();
-            GUI_ShowString(0, 0, options[select].name, 16);
+            GUI_ShowString(0, 0, options[select].name, &Font16);
             break;
 
         case WIN_STATE_EXEC:
@@ -224,7 +224,7 @@ void page_setting(void)
     {
         case WIN_STATE_INIT:
             GUI_Clear();
-            GUI_ShowString(0, 0, "setings", 16);
+            GUI_ShowString(0, 0, "setings", &Font16);
             button_attach(&btn_2, LONG_RRESS_START, cb_setting_long);
             button_attach(&btn_1, PRESS_DOWN, cb_setting_single);
             button_attach(&btn_2, PRESS_DOWN, cb_setting_single);
@@ -244,7 +244,7 @@ void page_setting(void)
             if (bak != select)
             {
                 bak = select;
-                GUI_ShowString(0, 0, options[select].name, 16);
+                GUI_ShowString(0, 0, options[select].name, &Font16);
                 GUI_SetPointColor(0);
 
                 if (select == 0)

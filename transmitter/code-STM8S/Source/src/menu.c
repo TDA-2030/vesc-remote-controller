@@ -166,19 +166,19 @@ void page_connect(void)
 
             while (NRF24L01_Check())
             {
-                GUI_ShowString(0, 0, "NRF24L01 ERROR", 16);
+                GUI_ShowString(0, 0, "NRF24L01 ERROR", &Font16);
                 OLED_Refresh_Gram();
             }
 
             RF24L01_Init();
             RF24L01_Set_Mode(MODE_TX); //设置为发射模式
             GUI_Clear();
-            GUI_ShowString(0, 0, "connecting", 16);
-            GUI_ShowString(0, 40, __DATE__, 12);
-            GUI_ShowString(18, 52, __TIME__, 12);
-            GUI_ShowString(86, 48, "ver: . ", 12);
-            GUI_ShowNum(110, 48, MAJOR_VERSION, 1, 12);
-            GUI_ShowNum(122, 48, MINOR_VERSION, 1, 12);
+            GUI_ShowString(0, 0, "connecting", &Font16);
+            GUI_ShowString(0, 40, __DATE__, &Font12);
+            GUI_ShowString(18, 52, __TIME__, &Font12);
+            GUI_ShowString(86, 48, "ver: . ", &Font12);
+            GUI_ShowNum(110, 48, MAJOR_VERSION, 1, &Font12);
+            GUI_ShowNum(122, 48, MINOR_VERSION, 1, &Font12);
             InitTIM2(4, 1000 - 1); //--定时器初始化 16分频
             break;
 
@@ -191,7 +191,7 @@ void page_connect(void)
 
                 if (++key_time > 112)
                 {
-                    GUI_ShowString(8, 26, "failed!!!", 16);
+                    GUI_ShowString(8, 26, "failed!!!", &Font16);
                     OLED_Refresh_Gram();
                     delay_ms(800);
                     system.state = SYSTEM_STATE_IDLE;
@@ -376,10 +376,10 @@ void page_main(void)
         case WIN_STATE_INIT:
             GUI_Clear();
             GUI_Rectangle(38, 0, 90, 5);
-            GUI_ShowChar(121, 0, '%', 12);
-            GUI_ShowChar(30, 51, 'M', 12);
+            GUI_ShowChar(121, 0, '%', &Font12);
+            GUI_ShowChar(30, 51, 'M', &Font12);
 
-            GUI_ShowString(65, 23, "km/h", 16);
+            GUI_ShowString(65, 23, "km/h", &Font16);
             GUI_Line(36, 20, 17, 39);
             GUI_Line(35, 20, 16, 39);
             GUI_Line(92, 20, 111, 39);
@@ -402,15 +402,17 @@ void page_main(void)
             // page_main_show_icon(16, 0, icon_light, send_info.direction);
             // page_main_show_icon(24, 0, icon_light, send_info.direction);
 
-            GUI_ShowNum(42, 39, send_info.throttle, 4, 8);
-            GUI_Showfloat(33, 8, skate_info.voltage, 'V', 3, 1, 8);
-            GUI_Showfloat(63, 8, skate_info.bat_current, 'A', 4, 1, 8);
-            GUI_ShowNum(103, 0, control_get_rssi(), 3, 12);
-            GUI_ShowNum(0, 51, skate_info.tacho_single, 5, 12);
+            GUI_ShowNum(42, 39, send_info.throttle, 4, &Font8);
+            GUI_Showfloat(30, 8, skate_info.voltage/10, 'V', 3, 1, &Font8);
+            GUI_Showfloat(66, 8, skate_info.bat_current, 'A', 3, 1, &Font8);
+            GUI_ShowNum(103, 0, control_get_rssi(), 3, &Font12);
+
+            GUI_Showfloat(55, 51, ((uint32_t)skate_info.voltage * skate_info.bat_current)/100, 'W', 4, 1, &Font12);
+            GUI_ShowNum(0, 51, skate_info.tacho_single, 5, &Font12);
 
             static uint32_t time = 0;
 
-            GUI_ShowNum(40, 15, skate_info.speed / 221, 2, 24);
+            GUI_ShowNum(40, 15, skate_info.speed / 221, 2, &Font24);
             
             // if (Sys_Time > time)
             // {
@@ -496,15 +498,15 @@ void page_para(void)
                 sprintf(buf, "%02d-%02d-%02d %02d:%02d:%02d",
                         skate_info.year, skate_info.month, skate_info.day,
                         skate_info.hour, skate_info.min, skate_info.sec);
-                GUI_ShowString(0, 0, (uint8_t *)buf, 12);
-                GUI_ShowNum(0, 16, skate_info.speed, 5, 12);
-                GUI_ShowNum(0, 28, skate_info.tacho, 5, 12);
-                GUI_ShowNum(0, 40, skate_info.board_temp, 5, 12);
-                GUI_ShowNum(0, 52, skate_info.wh_drawn, 5, 12);
-                GUI_ShowNum(32, 16, skate_info.wh_regen, 5, 12);
-                GUI_ShowNum(32, 28, skate_info.ah_drawn, 5, 12);
-                GUI_ShowNum(32, 40, skate_info.ah_regen, 5, 12);
-                GUI_ShowNum(32, 52, skate_info.charge_cur, 5, 12);
+                GUI_ShowString(0, 0, (uint8_t *)buf, &Font12);
+                GUI_ShowNum(0, 16, skate_info.speed, 5, &Font12);
+                GUI_ShowNum(0, 28, skate_info.tacho, 5, &Font12);
+                GUI_ShowNum(0, 40, skate_info.board_temp, 5, &Font12);
+                GUI_ShowNum(0, 52, skate_info.wh_drawn, 5, &Font12);
+                GUI_ShowNum(32, 16, skate_info.wh_regen, 5, &Font12);
+                GUI_ShowNum(32, 28, skate_info.ah_drawn, 5, &Font12);
+                GUI_ShowNum(32, 40, skate_info.ah_regen, 5, &Font12);
+                GUI_ShowNum(32, 52, skate_info.charge_cur, 5, &Font12);
                 // GUI_ShowNum(0, 51, skate_info.mot_current, 5, 8);
             }
         }

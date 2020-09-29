@@ -14,19 +14,16 @@
 //x:0~127
 //y:0~63
 //size:选择字体 12/16/24
-void GUI_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size)
+void GUI_ShowChar(uint8_t x, uint8_t y, uint8_t chr, const FONT_t *font)
 {
     uint8_t temp, t, t1;
     uint8_t y0 = y;
-    uint8_t csize = (size / 8 + ((size % 8) ? 1 : 0)) * (size / 2);		//得到字体一个字符对应点阵集所占的字节数
+    uint8_t csize = (font->Height / 8 + ((font->Height % 8) ? 1 : 0)) * font->Width;		//得到字体一个字符对应点阵集所占的字节数
     uint8_t *color;
 
-    if (8 == size) csize = 6;
-
-    if (24 == size)
+    if (font == &Font24)
     {
         chr = chr - '0';
-
         if (chr > 9)return;
     }
     else chr = chr - ' '; //得到偏移后的值
@@ -35,11 +32,7 @@ void GUI_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size)
 
     for (t = 0; t < csize; t++)
     {
-        if (size == 8)temp = asc2_0806[chr][t];     //调用0608字体
-        else if (size == 12)temp = asc2_1206[chr][t]; 	 	//调用1206字体
-        else if (size == 16)temp = asc2_1608[chr][t];	//调用1608字体
-        else if (size == 24)temp = asc2_2412[chr][t];	//调用2412字体
-        else return;								//没有的字库
+        temp = font->table[chr * csize + t];
 
         for (t1 = 0; t1 < 8; t1++)
         {
@@ -49,7 +42,7 @@ void GUI_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size)
             temp <<= 1;
             y++;
 
-            if ((y - y0) == size)
+            if ((y - y0) == font->Height)
             {
                 y = y0;
                 x++;
@@ -74,14 +67,11 @@ uint32_t mypow(uint8_t m, uint8_t n)
 //size:字体大小
 //mode:模式	0,填充模式;1,叠加模式
 //num:数值(0~4294967295);
-void GUI_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size)
+void GUI_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, const FONT_t *font)
 {
     uint8_t t, temp;
     uint8_t enshow = 0;
-    uint8_t offset;
-
-    if (size == 8) offset = 6;
-    else offset =	size / 2;
+    uint8_t offset = font->Width;
 
     for (t = 0; t < len; t++)
     {
@@ -91,13 +81,13 @@ void GUI_ShowNum(uint8_t x, uint8_t y, uint32_t num, uint8_t len, uint8_t size)
         {
             if (temp == 0)
             {
-                GUI_ShowChar(x + (offset * t), y, '0', size);
+                GUI_ShowChar(x + (offset * t), y, '0', font);
                 continue;
             }
             else enshow = 1;
         }
 
-        GUI_ShowChar(x + (offset * t), y, temp + '0', size);
+        GUI_ShowChar(x + (offset * t), y, temp + '0', font);
     }
 }
 
@@ -123,38 +113,35 @@ static int8_t my_i2a(int32_t in_num, char *out_str)
     return len;
 }
 
-void GUI_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len, uint8_t point, uint8_t size)
+void GUI_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len, uint8_t point, const FONT_t *font)
 {
-    uint8_t width;
     char buf[10];
     int8_t num_len;
-
-    if (8 == size) width = 6;
-    else width = size >> 1;
+    uint8_t width = font->Width;
 
     x += (width * len);
     num_len = my_i2a(num, buf);
 
     if (uint != 0)
     {
-        GUI_ShowChar(x + width, y, uint, size);
+        GUI_ShowChar(x + width, y, uint, font);
     }
 
     for (size_t i = 0; i < len; i++)
     {
         if (i == point)
         {
-            GUI_ShowChar(x, y, '.', size);
+            GUI_ShowChar(x, y, '.', font);
             x -= width;
         }
 
         if (i < num_len)
         {
-            GUI_ShowChar(x, y, (uint8_t)buf[i], size);
+            GUI_ShowChar(x, y, (uint8_t)buf[i], font);
         }
         else
         {
-            GUI_ShowChar(x, y, '0', size);
+            GUI_ShowChar(x, y, '0', font);
         }
 
         x -= width;
@@ -165,27 +152,22 @@ void GUI_Showfloat(uint16_t x, uint16_t y, uint32_t num, char uint, uint8_t len,
 //x,y:起点坐标
 //size:字体大小
 //*p:字符串起始地址
-void GUI_ShowString(uint8_t x, uint8_t y, const uint8_t *p, uint8_t size)
+void GUI_ShowString(uint8_t x, uint8_t y, const uint8_t *p, const FONT_t *font)
 {
     while ((*p <= '~') && (*p >= ' ')) //判断是不是非法字符!
     {
-        if (x > (128 - (size / 2)))
+        if (x > (128 - font->Width))
         {
             x = 0;
-            y += size;
+            y += font->Height;
         }
 
-        if (y > (64 - size))
+        if (y > (64 - font->Height))
         {
             y = x = 0;
-            GUI_Clear();
         }
-
-        GUI_ShowChar(x, y, *p, size);
-
-        if (8 == size)x += 6;
-        else  x += size / 2;
-
+        GUI_ShowChar(x, y, *p, font);
+        x += font->Width;
         p++;
     }
 }
