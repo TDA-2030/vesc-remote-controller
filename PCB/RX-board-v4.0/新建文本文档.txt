@@ -1,0 +1,18 @@
+
+usart1 蓝牙通信
+usart2 vesc通信
+usart3 gps
+
+pwm1   调速信号
+pwm2   LED_L
+pwm3   LED_R
+pwm4   LED_LG
+
+SPI    NRF24L01
+
+iic    MPU6050
+
+ADC1   电池电压
+ADC2   电池温度
+
+GPIO1  电源控制

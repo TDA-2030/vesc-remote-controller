@@ -1,0 +1,208 @@
+Removed Pin From Net: NetName=VCC24V Pin=C8-1
+Removed Pin From Net: NetName=VCC24V Pin=C9-1
+Removed Pin From Net: NetName=PGND Pin=D1-1
+Removed Pin From Net: NetName=VCC24V Pin=J5-1
+Removed Pin From Net: NetName=GND_OUT Pin=J6-1
+Removed Pin From Net: NetName=NetQ3_1 Pin=Q3-1
+Removed Pin From Net: NetName=GND_OUT Pin=Q4-0
+Removed Pin From Net: NetName=PGND Pin=Q4-2
+Removed Pin From Net: NetName=PGND Pin=Q4-3
+Removed Pin From Net: NetName=PGND Pin=Q4-4
+Removed Pin From Net: NetName=PGND Pin=Q4-5
+Removed Pin From Net: NetName=PGND Pin=Q4-6
+Removed Pin From Net: NetName=PGND Pin=Q4-7
+Removed Pin From Net: NetName=GND Pin=Q6-2
+Removed Pin From Net: NetName=NetQ6_3 Pin=Q6-3
+Removed Pin From Net: NetName=VCC24V Pin=R1-1
+Removed Pin From Net: NetName=NetJ4_1 Pin=R3-1
+Removed Pin From Net: NetName=PGND Pin=R3-2
+Removed Pin From Net: NetName=NetQ3_2 Pin=R17-1
+Removed Pin From Net: NetName=VCC24V Pin=R17-2
+Removed Pin From Net: NetName=MOS_G Pin=R19-1
+Removed Pin From Net: NetName=NetQ6_1 Pin=R19-2
+Removed Pin From Net: NetName=NetQ6_3 Pin=R20-1
+Removed Pin From Net: NetName=NetQ3_1 Pin=R20-2
+Removed Pin From Net: NetName=PGND Pin=R21-1
+Removed Pin From Net: NetName=NetD1_2 Pin=R21-2
+Removed Pin From Net: NetName=NetQ3_1 Pin=R38-1
+Removed Pin From Net: NetName=VCC24V Pin=R38-2
+Removed Pin From Net: NetName=NetQ6_1 Pin=R39-2
+Removed Pin From Net: NetName=PGND Pin=U3-0
+Removed Pin From Net: NetName=VCC24V Pin=U3-8
+Removed Pin From Net: NetName=NetC21_1 Pin=U5-5
+Removed Pin From Net: NetName=NetC16_1 Pin=U5-6
+Removed Pin From Net: NetName=GND Pin=U6-25
+Removed Pin From Net: NetName=GND Pin=USB1-6
+Removed Pin From Net: NetName=GND Pin=USB1-7
+Removed Pin From Net: NetName=GND Pin=USB1-8
+Removed Pin From Net: NetName=GND Pin=USB1-9
+Removed Pin From Net: NetName=NetC20_2 Pin=Y1-1
+Removed Pin From Net: NetName=NetC14_2 Pin=Y1-2
+Removed Pin From Net: NetName=NetC21_1 Pin=Y2-1
+Removed Pin From Net: NetName=NetC16_1 Pin=Y2-2
+Change Component DesignItemId : Designator=R3 Old DesignItemId=0603 0¦¸ (0R0) 1% New DesignItemId=0603 680¦¸ (6800) 1%
+Change Component DesignItemId : Designator=R20 Old DesignItemId=0603 10K¦¸ (1002) 1% New DesignItemId=0603 0¦¸ (0R0) 1%
+Change Component DesignItemId : Designator=R19 Old DesignItemId=0603 10K¦¸ (1002) 1% New DesignItemId=0603 680¦¸ (6800) 1%
+Change Component DesignItemId : Designator=R38 Old DesignItemId=0603 470K¦¸ (4703) 1% New DesignItemId=0603 1K¦¸ (1001) 1%
+Change Component DesignItemId : Designator=R39 Old DesignItemId=0603 470K¦¸ (4703) 1% New DesignItemId=0603 30K¦¸ (3002) 1%
+Change Component DesignItemId : Designator=R17 Old DesignItemId=0603 680¦¸ (6800) 1% New DesignItemId=0603 10K¦¸ (1002) 1%
+Change Component DesignItemId : Designator=Q6 Old DesignItemId=SOT-23 MMBT5551  G1 New DesignItemId=SOT-23 SS8050 Y1
+Change Component DesignItemId : Designator=Q3 Old DesignItemId=SOT-23 MMBT5401 2L New DesignItemId=SOT-23 SS8550 Y2
+Change Component DesignItemId : Designator=U5 Old DesignItemId=STM32L151C8T6 New DesignItemId=STM32F103C8T6
+Change Component Footprint: Designator=R3 Old Footprint=2512_R New Footprint=0603_R
+Change Component Comment : Designator=R3 Old Comment=0.001¦¸ New Comment=680¦¸ (6800) ¡À1%
+Change Component Comment : Designator=R20 Old Comment=10K¦¸ New Comment=0¦¸ (0R0) ¡À1%
+Change Component Comment : Designator=R19 Old Comment=10K¦¸  New Comment=680¦¸ (6800) ¡À1%
+Change Component Comment : Designator=R38 Old Comment=470K¦¸  New Comment=1K¦¸
+Change Component Comment : Designator=R39 Old Comment=470K¦¸  New Comment=100K¦¸
+Change Component Comment : Designator=R17 Old Comment=680¦¸ (6800) ¡À1% New Comment=10K¦¸
+Change Component Comment : Designator=Q6 Old Comment=MMBT5551  G1 New Comment=SS8050 Y1
+Change Component Comment : Designator=Q3 Old Comment=MMBT5401 2L New Comment=SS8550 Y2
+Change Component Comment : Designator=U5 Old Comment=STM32L151C8T6 New Comment=STM32F103C8T6
+Change Component Description : Designator=U6 Old Description=9ÖáÔË¶¯´¦? New Description=9ÖáÔË¶¯´¦Àí´«¸ĞÆ÷
+Change Component Description : Designator=Q5 Old Description=MOS(³¡Ğ§ New Description=MOS(³¡Ğ§Ó¦¹Ü)
+Change Component Description : Designator=Q3 Old Description=Èı¼« New Description=Èı¼«¹Ü
+Change Component Description : Designator=Q6 Old Description=Èı¼« New Description=Èı¼«¹Ü
+Change Component Description : Designator=D2 Old Description=¶ş¼« New Description=¶ş¼«¹Ü
+Change Component Description : Designator=VR1 Old Description=µÍÑ¹²îÏßĞÔÎÈ? New Description=µÍÑ¹²îÏßĞÔÎÈÑ¹(LDO)
+Change Component Description : Designator=D3 Old Description=·¢¹â New Description=·¢¹â¶ş¼«¹Ü
+Change Component Description : Designator=D1 Old Description=ÎÈÑ¹¶ş New Description=ÎÈÑ¹¶ş¼«¹Ü
+Change Component Description : Designator=R1 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R2 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R4 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R5 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R6 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R7 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R8 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R9 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R10 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R11 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R12 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R13 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R14 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R15 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R16 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R17 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R18 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R19 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R20 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R21 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R22 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R23 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R24 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R25 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R26 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R27 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R28 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R29 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R30 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R31 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R32 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R33 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R34 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R35 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R36 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R37 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R38 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=R39 Old Description=ÌùÆ¬ New Description=ÌùÆ¬µç×è
+Change Component Description : Designator=Y1 Old Description=ÌùÆ¬? New Description=ÌùÆ¬¾§Õñ
+Change Component Description : Designator=Y2 Old Description=ÌùÆ¬? New Description=ÌùÆ¬¾§Õñ
+Change Component Description : Designator=C1 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C5 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C6 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C7 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C8 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C9 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C10 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C11 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C12 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C13 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C14 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C15 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C16 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C17 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C18 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C19 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C20 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C21 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C22 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C23 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C24 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C25 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C26 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=C27 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µçÈİ
+Change Component Description : Designator=L1 Old Description=ÌùÆ¬? New Description=ÌùÆ¬µç¸Ğ
+Change Component Description : Designator=U1 Old Description=Í¨ÓÃ? New Description=Í¨ÓÃÔË·Å
+Change Component Description : Designator=C2 Old Description=îãµç New Description=îãµçÈİ
+Change Component Description : Designator=C3 Old Description=îãµç New Description=îãµçÈİ
+Change Component Description : Designator=C4 Old Description=îãµç New Description=îãµçÈİ
+Change Component Description : Designator=C28 Old Description=îãµç New Description=îãµçÈİ
+Added Component: Designator=C29(0805_C)
+Added Component: Designator=C30(0805_C)
+Added Component: Designator=D4(SOD-323)
+Added Component: Designator=D5(SOD-323)
+Added Component: Designator=Q7(SOT-23(SOT-23-3))
+Added Component: Designator=Q8(SOT-23(SOT-23-3))
+Added Pin To Net: NetName=NetQ3_1 Pin=C8-1
+Added Pin To Net: NetName=NetQ3_1 Pin=C9-1
+Added Pin To Net: NetName=GND Pin=C29-1
+Added Pin To Net: NetName=NetQ6_3 Pin=C29-2
+Added Pin To Net: NetName=GND_OUT Pin=D1-1
+Added Pin To Net: NetName=NetQ6_3 Pin=D5-2
+Added Pin To Net: NetName=GND_OUT Pin=J5-1
+Added Pin To Net: NetName=PGND Pin=J6-1
+Added Pin To Net: NetName=VCC24V Pin=Q3-1
+Added Pin To Net: NetName=VCC24V Pin=Q4-0
+Added Pin To Net: NetName=GND_OUT Pin=Q4-2
+Added Pin To Net: NetName=GND_OUT Pin=Q4-3
+Added Pin To Net: NetName=GND_OUT Pin=Q4-4
+Added Pin To Net: NetName=GND_OUT Pin=Q4-5
+Added Pin To Net: NetName=GND_OUT Pin=Q4-6
+Added Pin To Net: NetName=GND_OUT Pin=Q4-7
+Added Pin To Net: NetName=GND Pin=Q7-2
+Added Pin To Net: NetName=NetQ6_1 Pin=Q7-3
+Added Pin To Net: NetName=NetQ6_1 Pin=Q8-1
+Added Pin To Net: NetName=GND Pin=Q8-3
+Added Pin To Net: NetName=GND_OUT Pin=R1-1
+Added Pin To Net: NetName=NetQ3_2 Pin=R3-1
+Added Pin To Net: NetName=NetQ6_3 Pin=R3-2
+Added Pin To Net: NetName=GND_OUT Pin=R17-1
+Added Pin To Net: NetName=NetD1_2 Pin=R17-2
+Added Pin To Net: NetName=VCC24V Pin=R19-2
+Added Pin To Net: NetName=NetQ3_1 Pin=R20-1
+Added Pin To Net: NetName=VCC24V Pin=R20-2
+Added Pin To Net: NetName=NetQ6_1 Pin=R21-1
+Added Pin To Net: NetName=MOS_G Pin=R38-1
+Added Pin To Net: NetName=NetQ3_1 Pin=U3-8
+Added Pin To Net: NetName=NetC16_1 Pin=U5-5
+Added Pin To Net: NetName=NetC21_1 Pin=U5-6
+Added Pin To Net: NetName=NetC21_1 Pin=Y1-1
+Added Pin To Net: NetName=NetC16_1 Pin=Y1-2
+Added Pin To Net: NetName=NetC20_2 Pin=Y2-1
+Added Pin To Net: NetName=NetC14_2 Pin=Y2-2
+Change Net Name : Old Net Name=GND_OUT New Net Name=VCC24V_OUT
+Change Net Name : Old Net Name=NetQ3_1 New Net Name=NetC8_1
+Change Net Name : Old Net Name=NetQ6_3 New Net Name=NetC29_2
+Added Pin To Net: NetName=NetC30_1 Pin=C30-1
+Added Pin To Net: NetName=NetC30_1 Pin=Q6-2
+Added Pin To Net: NetName=NetC30_1 Pin=Q8-2
+Added Net: Name=NetC30_1
+Added Pin To Net: NetName=NetC30_2 Pin=C30-2
+Added Pin To Net: NetName=NetC30_2 Pin=D4-2
+Added Pin To Net: NetName=NetC30_2 Pin=D5-1
+Added Net: Name=NetC30_2
+Added Pin To Net: NetName=NetD4_1 Pin=D4-1
+Added Pin To Net: NetName=NetD4_1 Pin=Q6-3
+Added Pin To Net: NetName=NetD4_1 Pin=R19-1
+Added Pin To Net: NetName=NetD4_1 Pin=R21-2
+Added Net: Name=NetD4_1
+Added Pin To Net: NetName=NetQ7_1 Pin=Q7-1
+Added Pin To Net: NetName=NetQ7_1 Pin=R38-2
+Added Pin To Net: NetName=NetQ7_1 Pin=R39-2
+Added Net: Name=NetQ7_1
+Added Member To Class: ClassName=U_POWER Member=Component C29 10uF
+Added Member To Class: ClassName=U_POWER Member=Component C30 10uF
+Added Member To Class: ClassName=U_POWER Member=Component D4 1N4148WS T4
+Added Member To Class: ClassName=U_POWER Member=Component D5 1N4148WS T4
+Added Member To Class: ClassName=U_POWER Member=Component Q7 SS8050 Y1
+Added Member To Class: ClassName=U_POWER Member=Component Q8 SS8550 Y2

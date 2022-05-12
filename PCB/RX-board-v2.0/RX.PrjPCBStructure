@@ -1,0 +1,3 @@
+Record=SheetSymbol|SourceDocument=TOP.SchDoc|Designator=U_POWER|SchDesignator=U_POWER|FileName=POWER.SchDoc|SymbolType=Normal|RawFileName=POWER.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=TOP.SchDoc|Designator=U_RX|SchDesignator=U_RX|FileName=RX.SchDoc|SymbolType=Normal|RawFileName=RX.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=TopLevelDocument|FileName=TOP.SchDoc

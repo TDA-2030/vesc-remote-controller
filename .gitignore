@@ -1,5 +1,4 @@
-*.mxproject
-*.ioc
+
 *.dbgconf
 *.crf
 *.d
@@ -19,8 +18,5 @@
 **/MDK-ARM/*.ini
 
 .vscode/
-mininrf/
-PCB/
-3d-models/
 transmitter/code-STM8S/Project/Debug/
 transmitter/code-STM8S/Project/settings/
