@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-04-04 15:28:44
- * @LastEditTime: 2020-05-27 03:03:35
+ * @LastEditTime: 2020-06-03 21:54:54
  * @Description: file content
  */
 
@@ -468,8 +468,7 @@ void page_main(void)
             GUI_Clear();
             GUI_Rectangle(38, 0, 90, 5);
             GUI_ShowChar(121, 0, '%', 12);
-            GUI_ShowChar(30, 51, 'M', 12);
-            GUI_DashboardDraw(0, 25, 16, 7, 22);
+            GUI_DashboardDraw(0, 11, 16, 7, 22);
             GUI_DashboardDraw(1, 73, 16, 7, 22);
             button_attach(&btn_1, PRESS_REPEAT, cb_main_repeat);
             button_attach(&btn_1, LONG_RRESS_START, cb_main_long);
@@ -504,30 +503,24 @@ void page_main(void)
                 GUI_SetPointColor(1);
             }
 
-            if (send_info.direction == 0)
-            {
-                GUI_DrawBMP(0, 16, 16, 16, icon_arrow_up); //图片显示
-            }
-            else
-            {
-                GUI_DrawBMP(0, 16, 15, 31, icon_arrow_down); //图片显示
-            }
-
             static uint32_t time = 0;
 
             if (Sys_Time > time)
             {
                 time = Sys_Time + 40;
                 static uint8_t iiii = 0;
-                GUI_DashboardSetAngle(0, iiii);
+                GUI_DashboardSetAngle(0, iiii + 30);
                 GUI_DashboardSetAngle(1, iiii);
+                GUI_ShowNum(13, 51, iiii+30, 2, 12);
+                GUI_ShowString(26, 51, "km/h", 12);
+                GUI_ShowNum(84, 51, iiii, 3, 12);
+                GUI_ShowString(102, 51, "W", 12);
                 iiii += 3;
             }
 
             GUI_Showfloat(33, 8, skate_info.voltage, 'V', 3, 1, 8);
             GUI_Showfloat(63, 8, skate_info.mot_current, 'A', 4, 1, 8);
             GUI_ShowNum(103, 0, Sys_Tx_Rate, 3, 12);
-            GUI_ShowNum(0, 51, skate_info.tacho_single, 5, 12);
 
             if (Sys_Time > g_page_time)
             {

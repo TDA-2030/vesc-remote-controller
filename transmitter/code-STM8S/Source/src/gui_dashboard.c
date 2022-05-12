@@ -1,7 +1,7 @@
 /*
  * @Author: zhouli
  * @Date: 2020-05-25 01:14:54
- * @LastEditTime: 2020-05-27 02:53:19
+ * @LastEditTime: 2020-06-03 00:30:12
  * @Description: file content
  */
 
@@ -32,7 +32,7 @@ void GUI_DashboardDraw(uint8_t db_index, uint16_t x0, uint16_t y0, uint8_t scale
     dbs[db_index].r = r - 4;
     GUI_Arc(dbs[db_index].rx0, dbs[db_index].ry0, r, 38, 142);
     interval = 256 / (scale_num - 1);
-    angle = -38;
+    angle = -39;
 
     for (i = 0; i < scale_num; i++)
     {

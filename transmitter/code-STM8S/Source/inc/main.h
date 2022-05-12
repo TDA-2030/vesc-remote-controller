@@ -1,3 +1,11 @@
+/*
+ * @Author: zhouli
+ * @Date: 2020-04-04 15:28:44
+ * @LastEditTime: 2020-06-03 00:06:13
+ * @Description: file content
+ */ 
+
+
 #ifndef _MAIN_H__
 #define _MAIN_H__
 
@@ -12,7 +20,8 @@ typedef struct
 {
     uint16_t check;
 
-
+    uint32_t *dashboard_p1;
+    uint32_t *dashboard_p2;
     uint8_t light_en;
     uint8_t light1;
     uint8_t light2;
@@ -32,7 +41,7 @@ typedef struct
 } System_TypeDef;
 extern System_TypeDef system;
 
-enum
+typedef enum
 {
     SYSTEM_STATE_IDLE,     //已连接，未开机
     SYSTEM_STATE_RUNNING,  //运行中
